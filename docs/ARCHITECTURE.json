@@ -1,0 +1,1391 @@
+{
+  "generated_at" : "2024-05-22T10:00:00Z",
+  "business_name" : "The Urban Foundry, Baner",
+  "base_package" : "com.theurbanfoundrybaner",
+  "project_dependencies" : {
+    "spring_boot_starters" : [ "web", "data-jpa", "security", "validation", "actuator", "lombok", "postgresql" ],
+    "npm_packages" : [ "@tanstack/react-query", "react-hook-form", "zod", "axios", "react-router-dom", "shadcn-ui", "tailwindcss", "lucide-react", "date-fns" ]
+  },
+  "files" : [ {
+    "file_name" : "ErrorResponse.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/dto/ErrorResponse.java",
+    "file_type" : "BACKEND",
+    "layer" : "DTO",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Standard structure for API error responses.",
+    "public_functions" : [ ],
+    "public_variables" : [ {
+      "name" : "timestamp",
+      "type" : "Instant",
+      "description" : "Timestamp when the error occurred."
+    }, {
+      "name" : "status",
+      "type" : "int",
+      "description" : "HTTP status code."
+    }, {
+      "name" : "error",
+      "type" : "String",
+      "description" : "HTTP status error phrase (e.g., 'Not Found')."
+    }, {
+      "name" : "message",
+      "type" : "String",
+      "description" : "A descriptive error message."
+    }, {
+      "name" : "path",
+      "type" : "String",
+      "description" : "The request path that caused the error."
+    } ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ ],
+    "depends_on" : [ ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.dto`.\n2. Add the following imports:\n   - `java.time.Instant`\n3. Create a public class named `ErrorResponse`.\n4. Add the following private fields:\n   - `private Instant timestamp;`\n   - `private int status;`\n   - `private String error;`\n   - `private String message;`\n   - `private String path;`\n5. Create a public constructor that accepts all five fields in the order they are declared above.\n6. Generate public getters and setters for all fields.\n7. Do NOT add any Lombok annotations or any other fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "GlobalExceptionHandler.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/exception/GlobalExceptionHandler.java",
+    "file_type" : "BACKEND",
+    "layer" : "EXCEPTION",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Centralized exception handler for the application to return consistent error responses.",
+    "public_functions" : [ {
+      "name" : "handleResourceNotFoundException",
+      "parameters" : [ "ResourceNotFoundException ex", "WebRequest request" ],
+      "return_type" : "ResponseEntity<ErrorResponse>",
+      "description" : "Handles 404 Not Found errors."
+    }, {
+      "name" : "handleMethodArgumentNotValid",
+      "parameters" : [ "MethodArgumentNotValidException ex", "HttpHeaders headers", "HttpStatusCode status", "WebRequest request" ],
+      "return_type" : "ResponseEntity<Object>",
+      "description" : "Handles 400 Bad Request errors from @Valid validation."
+    }, {
+      "name" : "handleAccessDeniedException",
+      "parameters" : [ "AccessDeniedException ex", "WebRequest request" ],
+      "return_type" : "ResponseEntity<ErrorResponse>",
+      "description" : "Handles 403 Forbidden errors."
+    }, {
+      "name" : "handleGenericException",
+      "parameters" : [ "Exception ex", "WebRequest request" ],
+      "return_type" : "ResponseEntity<ErrorResponse>",
+      "description" : "Handles all other 500 Internal Server Errors."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "backend/src/main/java/com/theurbanfoundrybaner/dto/ErrorResponse.java", "backend/src/main/java/com/theurbanfoundrybaner/exception/ResourceNotFoundException.java" ],
+    "depends_on" : [ "backend/src/main/java/com/theurbanfoundrybaner/dto/ErrorResponse.java", "backend/src/main/java/com/theurbanfoundrybaner/exception/ResourceNotFoundException.java" ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.exception`.\n2. Add the following imports:\n   - `java.time.Instant`\n   - `java.util.LinkedHashMap`\n   - `java.util.List`\n   - `java.util.Map`\n   - `java.util.stream.Collectors`\n   - `org.springframework.http.HttpHeaders`\n   - `org.springframework.http.HttpStatus`\n   - `org.springframework.http.HttpStatusCode`\n   - `org.springframework.http.ResponseEntity`\n   - `org.springframework.security.access.AccessDeniedException`\n   - `org.springframework.web.bind.MethodArgumentNotValidException`\n   - `org.springframework.web.bind.annotation.ControllerAdvice`\n   - `org.springframework.web.bind.annotation.ExceptionHandler`\n   - `org.springframework.web.context.request.ServletWebRequest`\n   - `org.springframework.web.context.request.WebRequest`\n   - `org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler`\n   - `com.theurbanfoundrybaner.dto.ErrorResponse`\n3. Create a public class `GlobalExceptionHandler` that extends `ResponseEntityExceptionHandler`.\n4. Annotate the class with `@ControllerAdvice`.\n5. Implement the `handleResourceNotFoundException` method:\n   - Annotate it with `@ExceptionHandler(ResourceNotFoundException.class)`.\n   - Signature: `public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex, WebRequest request)`.\n   - Logic:\n     1. Create a new `ErrorResponse` object.\n     2. Set timestamp to `Instant.now()`.\n     3. Set status to `HttpStatus.NOT_FOUND.value()`.\n     4. Set error to `HttpStatus.NOT_FOUND.getReasonPhrase()`.\n     5. Set message to `ex.getMessage()`.\n     6. Set path to `((ServletWebRequest)request).getRequest().getRequestURI()`.\n     7. Return a new `ResponseEntity` with the `ErrorResponse` object and `HttpStatus.NOT_FOUND`.\n6. Override the `handleMethodArgumentNotValid` method:\n   - Signature: `protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request)`.\n   - Logic:\n     1. Create a `Map<String, Object>` for the response body.\n     2. Put `timestamp` with value `Instant.now()`.\n     3. Put `status` with value `status.value()`.\n     4. Create a `List<String>` of error messages by streaming `ex.getBindingResult().getFieldErrors()` and mapping each `FieldError` to its `getDefaultMessage()`.\n     5. Put `errors` with the list of error messages.\n     6. Put `path` with `((ServletWebRequest)request).getRequest().getRequestURI()`.\n     7. Return a new `ResponseEntity` with the body map, headers, and status.\n7. Implement the `handleAccessDeniedException` method:\n   - Annotate it with `@ExceptionHandler(AccessDeniedException.class)`.\n   - Signature: `public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex, WebRequest request)`.\n   - Logic:\n     1. Create a new `ErrorResponse` object.\n     2. Set timestamp to `Instant.now()`.\n     3. Set status to `HttpStatus.FORBIDDEN.value()`.\n     4. Set error to `HttpStatus.FORBIDDEN.getReasonPhrase()`.\n     5. Set message to `ex.getMessage()`.\n     6. Set path to `((ServletWebRequest)request).getRequest().getRequestURI()`.\n     7. Return a new `ResponseEntity` with the `ErrorResponse` object and `HttpStatus.FORBIDDEN`.\n8. Implement the `handleGenericException` method:\n   - Annotate it with `@ExceptionHandler(Exception.class)`.\n   - Signature: `public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, WebRequest request)`.\n   - Logic:\n     1. Create a new `ErrorResponse` object.\n     2. Set timestamp to `Instant.now()`.\n     3. Set status to `HttpStatus.INTERNAL_SERVER_ERROR.value()`.\n     4. Set error to `HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase()`.\n     5. Set message to `\"An unexpected error occurred: \" + ex.getMessage()`.\n     6. Set path to `((ServletWebRequest)request).getRequest().getRequestURI()`.\n     7. Return a new `ResponseEntity` with the `ErrorResponse` object and `HttpStatus.INTERNAL_SERVER_ERROR`.\n9. Do NOT add any other fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "ResourceNotFoundException.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/exception/ResourceNotFoundException.java",
+    "file_type" : "BACKEND",
+    "layer" : "EXCEPTION",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Custom exception for cases where a requested resource is not found.",
+    "public_functions" : [ {
+      "name" : "ResourceNotFoundException",
+      "parameters" : [ "String message" ],
+      "return_type" : "void",
+      "description" : "Constructor for the exception."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ ],
+    "depends_on" : [ ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.exception`.\n2. Add the following imports:\n   - `org.springframework.http.HttpStatus`\n   - `org.springframework.web.bind.annotation.ResponseStatus`\n3. Create a public class `ResourceNotFoundException` that extends `RuntimeException`.\n4. Annotate the class with `@ResponseStatus(HttpStatus.NOT_FOUND)`.\n5. Create a public constructor `public ResourceNotFoundException(String message)`.\n6. Inside the constructor, call `super(message)`.\n7. Do NOT add any other fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "Role.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/model/Role.java",
+    "file_type" : "BACKEND",
+    "layer" : "MODEL",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Enum defining user roles within the application.",
+    "public_functions" : [ ],
+    "public_variables" : [ {
+      "name" : "ADMIN",
+      "type" : "enum",
+      "description" : "Administrator role with full access."
+    }, {
+      "name" : "CUSTOMER",
+      "type" : "enum",
+      "description" : "Customer role with limited access (for future use)."
+    } ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ ],
+    "depends_on" : [ ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.model`.\n2. Create a public enum named `Role`.\n3. Define the enum constants: `ADMIN`, `CUSTOMER`.\n4. Do NOT add any fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "User.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/model/User.java",
+    "file_type" : "BACKEND",
+    "layer" : "MODEL",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Represents a user account in the system, primarily for admin authentication.",
+    "public_functions" : [ ],
+    "public_variables" : [ {
+      "name" : "id",
+      "type" : "UUID",
+      "description" : "Primary key, auto-generated."
+    }, {
+      "name" : "email",
+      "type" : "String",
+      "description" : "User's email address, used for login. Must be unique and not null."
+    }, {
+      "name" : "passwordHash",
+      "type" : "String",
+      "description" : "BCrypt-hashed password. Not null."
+    }, {
+      "name" : "role",
+      "type" : "Role",
+      "description" : "User's role (e.g., ADMIN). Not null."
+    } ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "backend/src/main/java/com/theurbanfoundrybaner/model/Role.java" ],
+    "depends_on" : [ "backend/src/main/java/com/theurbanfoundrybaner/model/Role.java" ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.model`.\n2. Add the following imports:\n   - `jakarta.persistence.Column`\n   - `jakarta.persistence.Entity`\n   - `jakarta.persistence.EnumType`\n   - `jakarta.persistence.Enumerated`\n   - `jakarta.persistence.GeneratedValue`\n   - `jakarta.persistence.GenerationType`\n   - `jakarta.persistence.Id`\n   - `jakarta.persistence.Table`\n   - `java.util.UUID`\n   - `lombok.AllArgsConstructor`\n   - `lombok.Builder`\n   - `lombok.Data`\n   - `lombok.NoArgsConstructor`\n3. Create a public class named `User`.\n4. Annotate the class with `@Entity`, `@Table(name = \"users\")`, `@Data`, `@NoArgsConstructor`, `@AllArgsConstructor`, and `@Builder`.\n5. Add the following private fields:\n   - `@Id @GeneratedValue(strategy = GenerationType.AUTO) @Column(columnDefinition = \"uuid\", updatable = false, nullable = false) private UUID id;`\n   - `@Column(unique = true, nullable = false) private String email;`\n   - `@Column(nullable = false) private String passwordHash;`\n   - `@Enumerated(EnumType.STRING) @Column(nullable = false) private Role role;`\n6. Do NOT add any other fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "UserRepository.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/repository/UserRepository.java",
+    "file_type" : "BACKEND",
+    "layer" : "REPOSITORY",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "JPA repository for User entities.",
+    "public_functions" : [ {
+      "name" : "findByEmail",
+      "parameters" : [ "String email" ],
+      "return_type" : "Optional<User>",
+      "description" : "Finds a user by their email address."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "backend/src/main/java/com/theurbanfoundrybaner/model/User.java" ],
+    "depends_on" : [ "backend/src/main/java/com/theurbanfoundrybaner/model/User.java" ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.repository`.\n2. Add the following imports:\n   - `java.util.Optional`\n   - `java.util.UUID`\n   - `org.springframework.data.jpa.repository.JpaRepository`\n   - `com.theurbanfoundrybaner.model.User`\n3. Create a public interface named `UserRepository` that extends `JpaRepository<User, UUID>`.\n4. Add the following method signature to the interface:\n   - `Optional<User> findByEmail(String email);`\n5. Do NOT add any other methods or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "UserService.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/service/UserService.java",
+    "file_type" : "BACKEND",
+    "layer" : "SERVICE",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Implements Spring Security's UserDetailsService to load user-specific data.",
+    "public_functions" : [ {
+      "name" : "loadUserByUsername",
+      "parameters" : [ "String email" ],
+      "return_type" : "UserDetails",
+      "description" : "Loads a user by email for authentication purposes."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "backend/src/main/java/com/theurbanfoundrybaner/repository/UserRepository.java" ],
+    "depends_on" : [ "backend/src/main/java/com/theurbanfoundrybaner/repository/UserRepository.java" ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.service`.\n2. Add the following imports:\n   - `java.util.Collections`\n   - `org.springframework.security.core.authority.SimpleGrantedAuthority`\n   - `org.springframework.security.core.userdetails.UserDetails`\n   - `org.springframework.security.core.userdetails.UserDetailsService`\n   - `org.springframework.security.core.userdetails.UsernameNotFoundException`\n   - `org.springframework.stereotype.Service`\n   - `com.theurbanfoundrybaner.model.User`\n   - `com.theurbanfoundrybaner.repository.UserRepository`\n3. Create a public class `UserService` that implements `UserDetailsService`.\n4. Annotate the class with `@Service`.\n5. Add a private final field: `private final UserRepository userRepository;`\n6. Create a public constructor to inject the `UserRepository`.\n7. Implement the `loadUserByUsername` method:\n   - Annotate it with `@Override`.\n   - Signature: `public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException`.\n   - Logic:\n     1. Call `userRepository.findByEmail(email)` and store the result in a `User` variable. Use `.orElseThrow()` to throw a `UsernameNotFoundException` with the message `\"User not found with email: \" + email` if the user is not present.\n     2. Return a new `org.springframework.security.core.userdetails.User` object, passing:\n        - `user.getEmail()` for the username.\n        - `user.getPasswordHash()` for the password.\n        - `Collections.singletonList(new SimpleGrantedAuthority(\"ROLE_\" + user.getRole().name()))` for the authorities.\n8. Do NOT add any other fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "JwtUtil.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/util/JwtUtil.java",
+    "file_type" : "BACKEND",
+    "layer" : "UTIL",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Utility class for handling JWT creation, validation, and parsing.",
+    "public_functions" : [ {
+      "name" : "generateToken",
+      "parameters" : [ "UserDetails userDetails" ],
+      "return_type" : "String",
+      "description" : "Generates a JWT for a given user."
+    }, {
+      "name" : "validateToken",
+      "parameters" : [ "String token", "UserDetails userDetails" ],
+      "return_type" : "boolean",
+      "description" : "Validates a JWT against a user's details."
+    }, {
+      "name" : "extractEmail",
+      "parameters" : [ "String token" ],
+      "return_type" : "String",
+      "description" : "Extracts the email (subject) from a JWT."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ ],
+    "depends_on" : [ ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.util`.\n2. Add the following imports:\n   - `io.jsonwebtoken.Claims`\n   - `io.jsonwebtoken.Jwts`\n   - `io.jsonwebtoken.SignatureAlgorithm`\n   - `io.jsonwebtoken.security.Keys`\n   - `java.security.Key`\n   - `java.util.Date`\n   - `java.util.HashMap`\n   - `java.util.Map`\n   - `java.util.function.Function`\n   - `org.springframework.beans.factory.annotation.Value`\n   - `org.springframework.security.core.userdetails.UserDetails`\n   - `org.springframework.stereotype.Component`\n3. Create a public class `JwtUtil`.\n4. Annotate the class with `@Component`.\n5. Add the following private fields:\n   - `@Value(\"${jwt.secret}\") private String secretKey;`\n   - `@Value(\"${jwt.expiration.ms}\") private long jwtExpirationMs;`\n6. Implement the public method `extractEmail(String token)`:\n   - It should call and return the result of `extractClaim(token, Claims::getSubject)`.\n7. Implement the public method `extractClaim(String token, Function<Claims, T> claimsResolver)`:\n   - It should call `extractAllClaims(token)` and then apply the `claimsResolver` function to the result.\n8. Implement the public method `generateToken(UserDetails userDetails)`:\n   - It should call `generateToken(new HashMap<>(), userDetails)`.\n9. Implement the public method `generateToken(Map<String, Object> extraClaims, UserDetails userDetails)`:\n   - Logic:\n     1. Use `Jwts.builder()`.\n     2. Set the claims with `extraClaims`.\n     3. Set the subject with `userDetails.getUsername()`.\n     4. Set the issued at time to `new Date(System.currentTimeMillis())`.\n     5. Set the expiration time to `new Date(System.currentTimeMillis() + jwtExpirationMs)`.\n     6. Sign with `getSignInKey()` and `SignatureAlgorithm.HS256`.\n     7. Compact and return the token string.\n10. Implement the public method `validateToken(String token, UserDetails userDetails)`:\n    - Logic:\n      1. Extract the email from the token and store it in a variable `email`.\n      2. Return `true` if `email` equals `userDetails.getUsername()` AND the token is NOT expired. Otherwise, return `false`.\n11. Implement the public method `getExpirationDateFromToken(String token)`:\n    - It should call `extractClaim(token, Claims::getExpiration)`.\n12. Implement a private method `isTokenExpired(String token)`:\n    - It should call `getExpirationDateFromToken(token)` and check if the returned date is before the current date.\n13. Implement a private method `extractAllClaims(String token)`:\n    - Logic: Use `Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody()`.\n14. Implement a private method `getSignInKey()`:\n    - Logic: Decode the `secretKey` using `Decoders.BASE64.decode(secretKey)` and return `Keys.hmacShaKeyFor(keyBytes)`.\n15. Do NOT add any other fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "JwtAuthFilter.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/security/JwtAuthFilter.java",
+    "file_type" : "BACKEND",
+    "layer" : "CONFIG",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "A filter that intercepts requests to validate the JWT from the Authorization header.",
+    "public_functions" : [ {
+      "name" : "doFilterInternal",
+      "parameters" : [ "HttpServletRequest request", "HttpServletResponse response", "FilterChain filterChain" ],
+      "return_type" : "void",
+      "description" : "Reads Bearer token, validates it, and sets the SecurityContext."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "backend/src/main/java/com/theurbanfoundrybaner/util/JwtUtil.java", "backend/src/main/java/com/theurbanfoundrybaner/service/UserService.java" ],
+    "depends_on" : [ "backend/src/main/java/com/theurbanfoundrybaner/util/JwtUtil.java", "backend/src/main/java/com/theurbanfoundrybaner/service/UserService.java" ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.security`.\n2. Add the following imports:\n   - `jakarta.servlet.FilterChain`\n   - `jakarta.servlet.ServletException`\n   - `jakarta.servlet.http.HttpServletRequest`\n   - `jakarta.servlet.http.HttpServletResponse`\n   - `java.io.IOException`\n   - `org.springframework.lang.NonNull`\n   - `org.springframework.security.authentication.UsernamePasswordAuthenticationToken`\n   - `org.springframework.security.core.context.SecurityContextHolder`\n   - `org.springframework.security.core.userdetails.UserDetails`\n   - `org.springframework.security.web.authentication.WebAuthenticationDetailsSource`\n   - `org.springframework.stereotype.Component`\n   - `org.springframework.web.filter.OncePerRequestFilter`\n   - `com.theurbanfoundrybaner.service.UserService`\n   - `com.theurbanfoundrybaner.util.JwtUtil`\n3. Create a public class `JwtAuthFilter` that extends `OncePerRequestFilter`.\n4. Annotate the class with `@Component`.\n5. Add private final fields for `JwtUtil jwtUtil` and `UserService userService`.\n6. Create a public constructor to inject these dependencies.\n7. Implement the `doFilterInternal` method:\n   - Annotate the parameters `request`, `response`, and `filterChain` with `@NonNull`.\n   - Signature: `protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException`.\n   - Logic:\n     1. Get the `Authorization` header from the request.\n     2. If the header is null or does not start with `\"Bearer \"`, call `filterChain.doFilter(request, response)` and return.\n     3. Extract the JWT token by taking the substring after `\"Bearer \"`.\n     4. Extract the email from the token using `jwtUtil.extractEmail(jwt)`.\n     5. If the email is not null and `SecurityContextHolder.getContext().getAuthentication()` is null:\n        a. Load `UserDetails` using `userService.loadUserByUsername(email)`.\n        b. Validate the token using `jwtUtil.validateToken(jwt, userDetails)`.\n        c. If the token is valid:\n           i. Create a `UsernamePasswordAuthenticationToken` with `userDetails`, null credentials, and `userDetails.getAuthorities()`.\n           ii. Set the details on the token using `new WebAuthenticationDetailsSource().buildDetails(request)`.\n           iii. Set this token in the security context: `SecurityContextHolder.getContext().setAuthentication(authToken)`.\n     6. Call `filterChain.doFilter(request, response)`.\n8. Do NOT add any other fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "SecurityConfig.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/config/SecurityConfig.java",
+    "file_type" : "BACKEND",
+    "layer" : "CONFIG",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Configures Spring Security, including CORS, session management, and protected routes.",
+    "public_functions" : [ {
+      "name" : "securityFilterChain",
+      "parameters" : [ "HttpSecurity http" ],
+      "return_type" : "SecurityFilterChain",
+      "description" : "Defines security rules, stateless session policy, and JWT filter chain."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "backend/src/main/java/com/theurbanfoundrybaner/security/JwtAuthFilter.java" ],
+    "depends_on" : [ "backend/src/main/java/com/theurbanfoundrybaner/security/JwtAuthFilter.java" ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.config`.\n2. Add the following imports:\n   - `org.springframework.context.annotation.Bean`\n   - `org.springframework.context.annotation.Configuration`\n   - `org.springframework.security.authentication.AuthenticationManager`\n   - `org.springframework.security.authentication.AuthenticationProvider`\n   - `org.springframework.security.authentication.dao.DaoAuthenticationProvider`\n   - `org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration`\n   - `org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity`\n   - `org.springframework.security.config.annotation.web.builders.HttpSecurity`\n   - `org.springframework.security.config.annotation.web.configuration.EnableWebSecurity`\n   - `org.springframework.security.config.http.SessionCreationPolicy`\n   - `org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder`\n   - `org.springframework.security.crypto.password.PasswordEncoder`\n   - `org.springframework.security.web.SecurityFilterChain`\n   - `org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter`\n   - `com.theurbanfoundrybaner.security.JwtAuthFilter`\n   - `com.theurbanfoundrybaner.service.UserService`\n3. Create a public class `SecurityConfig`.\n4. Annotate the class with `@Configuration`, `@EnableWebSecurity`, and `@EnableMethodSecurity`.\n5. Add private final fields for `JwtAuthFilter jwtAuthFilter` and `UserService userService`.\n6. Create a public constructor to inject these dependencies.\n7. Create a `@Bean` method `securityFilterChain(HttpSecurity http)` that returns a `SecurityFilterChain` and throws `Exception`.\n   - Logic:\n     1. Disable CSRF: `http.csrf(csrf -> csrf.disable())`.\n     2. Configure authorization rules: `http.authorizeHttpRequests(auth -> auth...`\n        - Permit all requests to `/api/v1/auth/**`, `/api/v1/menu/**`, `/api/v1/reservations/**`.\n        - Any other request must be authenticated.\n     3. Configure session management: `http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))`.\n     4. Set the authentication provider: `http.authenticationProvider(authenticationProvider())`.\n     5. Add the JWT filter: `http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)`.\n     6. Build and return the `http` object: `return http.build()`.\n8. Create a `@Bean` method `authenticationProvider()` that returns an `AuthenticationProvider`.\n   - Logic:\n     1. Create a `DaoAuthenticationProvider` instance.\n     2. Set the `UserDetailsService` to `userService`.\n     3. Set the `PasswordEncoder` to `passwordEncoder()`.\n     4. Return the provider instance.\n9. Create a `@Bean` method `passwordEncoder()` that returns a `PasswordEncoder`.\n   - Logic: Return a new `BCryptPasswordEncoder()`.\n10. Create a `@Bean` method `authenticationManager(AuthenticationConfiguration config)` that returns an `AuthenticationManager` and throws `Exception`.\n    - Logic: Return `config.getAuthenticationManager()`.\n11. Do NOT add any other fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "AdminInitializer.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/config/AdminInitializer.java",
+    "file_type" : "BACKEND",
+    "layer" : "CONFIG",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "A CommandLineRunner to create the initial admin user from environment variables if one doesn't exist.",
+    "public_functions" : [ {
+      "name" : "run",
+      "parameters" : [ "String... args" ],
+      "return_type" : "void",
+      "description" : "Checks for an admin user on startup and creates one if needed."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "backend/src/main/java/com/theurbanfoundrybaner/repository/UserRepository.java", "backend/src/main/java/com/theurbanfoundrybaner/model/User.java" ],
+    "depends_on" : [ "backend/src/main/java/com/theurbanfoundrybaner/repository/UserRepository.java" ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.config`.\n2. Add the following imports:\n   - `org.springframework.beans.factory.annotation.Value`\n   - `org.springframework.boot.CommandLineRunner`\n   - `org.springframework.security.crypto.password.PasswordEncoder`\n   - `org.springframework.stereotype.Component`\n   - `com.theurbanfoundrybaner.model.Role`\n   - `com.theurbanfoundrybaner.model.User`\n   - `com.theurbanfoundrybaner.repository.UserRepository`\n3. Create a public class `AdminInitializer` that implements `CommandLineRunner`.\n4. Annotate the class with `@Component`.\n5. Add the following private fields:\n   - `private final UserRepository userRepository;`\n   - `private final PasswordEncoder passwordEncoder;`\n   - `@Value(\"${app.admin.email}\") private String adminEmail;`\n   - `@Value(\"${app.admin.password}\") private String adminPassword;`\n6. Create a public constructor to inject `UserRepository` and `PasswordEncoder`.\n7. Implement the `run` method:\n   - Annotate it with `@Override`.\n   - Signature: `public void run(String... args) throws Exception`.\n   - Logic:\n     1. Check if a user with `adminEmail` already exists by calling `userRepository.findByEmail(adminEmail)`.`isPresent()`.\n     2. If the user does not exist:\n        a. Create a new `User` object using its builder.\n        b. Set the email to `adminEmail`.\n        c. Set the password hash by encoding `adminPassword` with the `passwordEncoder`.\n        d. Set the role to `Role.ADMIN`.\n        e. Build the user object.\n        f. Save the new user using `userRepository.save(adminUser)`.\n8. Do NOT add any other fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "AuthRequest.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/dto/AuthRequest.java",
+    "file_type" : "BACKEND",
+    "layer" : "DTO",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Data Transfer Object for authentication requests.",
+    "public_functions" : [ ],
+    "public_variables" : [ {
+      "name" : "email",
+      "type" : "String",
+      "description" : "User's email. @NotBlank @Email"
+    }, {
+      "name" : "password",
+      "type" : "String",
+      "description" : "User's password. @NotBlank"
+    } ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ ],
+    "depends_on" : [ ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.dto`.\n2. Add the following imports:\n   - `jakarta.validation.constraints.Email`\n   - `jakarta.validation.constraints.NotBlank`\n   - `lombok.AllArgsConstructor`\n   - `lombok.Data`\n   - `lombok.NoArgsConstructor`\n3. Create a public class `AuthRequest`.\n4. Annotate the class with `@Data`, `@NoArgsConstructor`, and `@AllArgsConstructor`.\n5. Add the following private fields:\n   - `@NotBlank(message = \"Email is required\") @Email(message = \"Email should be valid\") private String email;`\n   - `@NotBlank(message = \"Password is required\") private String password;`\n6. Do NOT add any other fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "AuthResponse.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/dto/AuthResponse.java",
+    "file_type" : "BACKEND",
+    "layer" : "DTO",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Data Transfer Object for authentication responses.",
+    "public_functions" : [ ],
+    "public_variables" : [ {
+      "name" : "token",
+      "type" : "String",
+      "description" : "The generated JWT."
+    }, {
+      "name" : "role",
+      "type" : "String",
+      "description" : "The user's role (e.g., 'ADMIN')."
+    }, {
+      "name" : "expiresAt",
+      "type" : "long",
+      "description" : "Token expiration timestamp in epoch milliseconds."
+    } ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ ],
+    "depends_on" : [ ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.dto`.\n2. Add the following imports:\n   - `lombok.AllArgsConstructor`\n   - `lombok.Data`\n   - `lombok.NoArgsConstructor`\n3. Create a public class `AuthResponse`.\n4. Annotate the class with `@Data`, `@NoArgsConstructor`, and `@AllArgsConstructor`.\n5. Add the following private fields:\n   - `private String token;`\n   - `private String role;`\n   - `private long expiresAt;`\n6. Do NOT add any other fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "AuthController.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/controller/AuthController.java",
+    "file_type" : "BACKEND",
+    "layer" : "CONTROLLER",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Handles user authentication and token generation.",
+    "public_functions" : [ {
+      "name" : "login",
+      "parameters" : [ "AuthRequest authRequest" ],
+      "return_type" : "ResponseEntity<AuthResponse>",
+      "description" : "Authenticates a user and returns a JWT."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ {
+      "method" : "POST",
+      "path" : "/api/v1/auth/login",
+      "request_body" : "AuthRequest",
+      "response_body" : "AuthResponse",
+      "description" : "Authenticates admin user and returns a JWT."
+    } ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "backend/src/main/java/com/theurbanfoundrybaner/dto/AuthRequest.java", "backend/src/main/java/com/theurbanfoundrybaner/dto/AuthResponse.java", "backend/src/main/java/com/theurbanfoundrybaner/util/JwtUtil.java" ],
+    "depends_on" : [ "backend/src/main/java/com/theurbanfoundrybaner/dto/AuthRequest.java", "backend/src/main/java/com/theurbanfoundrybaner/dto/AuthResponse.java", "backend/src/main/java/com/theurbanfoundrybaner/util/JwtUtil.java" ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.controller`.\n2. Add the following imports:\n   - `jakarta.validation.Valid`\n   - `org.springframework.http.ResponseEntity`\n   - `org.springframework.security.authentication.AuthenticationManager`\n   - `org.springframework.security.authentication.UsernamePasswordAuthenticationToken`\n   - `org.springframework.security.core.userdetails.UserDetails`\n   - `org.springframework.web.bind.annotation.PostMapping`\n   - `org.springframework.web.bind.annotation.RequestBody`\n   - `org.springframework.web.bind.annotation.RequestMapping`\n   - `org.springframework.web.bind.annotation.RestController`\n   - `com.theurbanfoundrybaner.dto.AuthRequest`\n   - `com.theurbanfoundrybaner.dto.AuthResponse`\n   - `com.theurbanfoundrybaner.service.UserService`\n   - `com.theurbanfoundrybaner.util.JwtUtil`\n3. Create a public class `AuthController`.\n4. Annotate the class with `@RestController` and `@RequestMapping(\"/api/v1/auth\")`.\n5. Add private final fields for `AuthenticationManager authenticationManager`, `UserService userService`, and `JwtUtil jwtUtil`.\n6. Create a public constructor to inject these dependencies.\n7. Create a public method `login`:\n   - Signature: `public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest authRequest)`.\n   - Annotate it with `@PostMapping(\"/login\")`.\n   - Logic:\n     1. Authenticate the user by calling `authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()))`.\n     2. Load `UserDetails` by calling `userService.loadUserByUsername(authRequest.getEmail())`.\n     3. Generate a JWT by calling `jwtUtil.generateToken(userDetails)`.\n     4. Get the user's role from `userDetails.getAuthorities()`. Stream the authorities, get the first one, get its authority string, and remove the \"ROLE_\" prefix.\n     5. Get the expiration date from the token using `jwtUtil.getExpirationDateFromToken(jwt)`. Convert it to epoch milliseconds.\n     6. Create a new `AuthResponse` with the token, role, and expiration timestamp.\n     7. Return the `AuthResponse` in a `ResponseEntity.ok()`.\n8. Do NOT add any other fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "MenuItemCategory.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/model/MenuItemCategory.java",
+    "file_type" : "BACKEND",
+    "layer" : "MODEL",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Enum for categorizing menu items.",
+    "public_functions" : [ ],
+    "public_variables" : [ {
+      "name" : "APPETIZER",
+      "type" : "enum",
+      "description" : "Appetizers and starters."
+    }, {
+      "name" : "MAIN_COURSE",
+      "type" : "enum",
+      "description" : "Main dishes."
+    }, {
+      "name" : "PIZZA",
+      "type" : "enum",
+      "description" : "Pizzas."
+    }, {
+      "name" : "DESSERT",
+      "type" : "enum",
+      "description" : "Desserts."
+    }, {
+      "name" : "BEVERAGE",
+      "type" : "enum",
+      "description" : "Non-alcoholic beverages."
+    }, {
+      "name" : "COCKTAIL",
+      "type" : "enum",
+      "description" : "Alcoholic cocktails."
+    } ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ ],
+    "depends_on" : [ ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.model`.\n2. Create a public enum named `MenuItemCategory`.\n3. Define the enum constants: `APPETIZER`, `MAIN_COURSE`, `PIZZA`, `DESSERT`, `BEVERAGE`, `COCKTAIL`.\n4. Do NOT add any fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "MenuItem.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/model/MenuItem.java",
+    "file_type" : "BACKEND",
+    "layer" : "MODEL",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Represents a single item on the restaurant's menu.",
+    "public_functions" : [ ],
+    "public_variables" : [ {
+      "name" : "id",
+      "type" : "UUID",
+      "description" : "Primary key, auto-generated."
+    }, {
+      "name" : "name",
+      "type" : "String",
+      "description" : "Name of the menu item. Not null, max 100 chars."
+    }, {
+      "name" : "description",
+      "type" : "String",
+      "description" : "Description of the item. Not null, max 500 chars."
+    }, {
+      "name" : "price",
+      "type" : "BigDecimal(10, 2)",
+      "description" : "Price of the item. Not null."
+    }, {
+      "name" : "category",
+      "type" : "MenuItemCategory",
+      "description" : "Category of the item. Not null."
+    }, {
+      "name" : "imageUrl",
+      "type" : "String",
+      "description" : "URL to a high-quality image of the item. Not null."
+    }, {
+      "name" : "isVegetarian",
+      "type" : "boolean",
+      "description" : "Flag indicating if the item is vegetarian."
+    }, {
+      "name" : "isAvailable",
+      "type" : "boolean",
+      "description" : "Flag indicating if the item is currently available for ordering."
+    } ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "backend/src/main/java/com/theurbanfoundrybaner/model/MenuItemCategory.java" ],
+    "depends_on" : [ "backend/src/main/java/com/theurbanfoundrybaner/model/MenuItemCategory.java" ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.model`.\n2. Add the following imports:\n   - `jakarta.persistence.Column`\n   - `jakarta.persistence.Entity`\n   - `jakarta.persistence.EnumType`\n   - `jakarta.persistence.Enumerated`\n   - `jakarta.persistence.GeneratedValue`\n   - `jakarta.persistence.GenerationType`\n   - `jakarta.persistence.Id`\n   - `jakarta.persistence.Table`\n   - `java.math.BigDecimal`\n   - `java.util.UUID`\n   - `lombok.AllArgsConstructor`\n   - `lombok.Builder`\n   - `lombok.Data`\n   - `lombok.NoArgsConstructor`\n3. Create a public class named `MenuItem`.\n4. Annotate the class with `@Entity`, `@Table(name = \"menu_items\")`, `@Data`, `@NoArgsConstructor`, `@AllArgsConstructor`, and `@Builder`.\n5. Add the following private fields:\n   - `@Id @GeneratedValue(strategy = GenerationType.AUTO) @Column(columnDefinition = \"uuid\", updatable = false, nullable = false) private UUID id;`\n   - `@Column(nullable = false, length = 100) private String name;`\n   - `@Column(nullable = false, length = 500) private String description;`\n   - `@Column(nullable = false, precision = 10, scale = 2) private BigDecimal price;`\n   - `@Enumerated(EnumType.STRING) @Column(nullable = false) private MenuItemCategory category;`\n   - `@Column(nullable = false) private String imageUrl;`\n   - `@Column(name = \"is_vegetarian\", nullable = false) private boolean isVegetarian;`\n   - `@Column(name = \"is_available\", nullable = false) private boolean isAvailable;`\n6. Do NOT add any other fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "MenuItemRepository.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/repository/MenuItemRepository.java",
+    "file_type" : "BACKEND",
+    "layer" : "REPOSITORY",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "JPA repository for MenuItem entities.",
+    "public_functions" : [ {
+      "name" : "findByIsAvailableTrue",
+      "parameters" : [ ],
+      "return_type" : "List<MenuItem>",
+      "description" : "Finds all menu items that are currently available."
+    }, {
+      "name" : "findByCategoryAndIsAvailableTrue",
+      "parameters" : [ "MenuItemCategory category" ],
+      "return_type" : "List<MenuItem>",
+      "description" : "Finds all available menu items within a specific category."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "backend/src/main/java/com/theurbanfoundrybaner/model/MenuItem.java", "backend/src/main/java/com/theurbanfoundrybaner/model/MenuItemCategory.java" ],
+    "depends_on" : [ "backend/src/main/java/com/theurbanfoundrybaner/model/MenuItem.java" ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.repository`.\n2. Add the following imports:\n   - `java.util.List`\n   - `java.util.UUID`\n   - `org.springframework.data.jpa.repository.JpaRepository`\n   - `com.theurbanfoundrybaner.model.MenuItem`\n   - `com.theurbanfoundrybaner.model.MenuItemCategory`\n3. Create a public interface named `MenuItemRepository` that extends `JpaRepository<MenuItem, UUID>`.\n4. Add the following method signatures to the interface:\n   - `List<MenuItem> findByIsAvailableTrue();`\n   - `List<MenuItem> findByCategoryAndIsAvailableTrue(MenuItemCategory category);`\n5. Do NOT add any other methods or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "MenuItemDto.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/dto/MenuItemDto.java",
+    "file_type" : "BACKEND",
+    "layer" : "DTO",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Public-facing representation of a menu item.",
+    "public_functions" : [ ],
+    "public_variables" : [ {
+      "name" : "id",
+      "type" : "String",
+      "description" : "UUID of the menu item."
+    }, {
+      "name" : "name",
+      "type" : "String",
+      "description" : "Name of the menu item."
+    }, {
+      "name" : "description",
+      "type" : "String",
+      "description" : "Description of the item."
+    }, {
+      "name" : "price",
+      "type" : "String",
+      "description" : "Price of the item, formatted as a string."
+    }, {
+      "name" : "category",
+      "type" : "String",
+      "description" : "Category of the item."
+    }, {
+      "name" : "imageUrl",
+      "type" : "String",
+      "description" : "URL to an image of the item."
+    }, {
+      "name" : "isVegetarian",
+      "type" : "boolean",
+      "description" : "True if the item is vegetarian."
+    }, {
+      "name" : "isAvailable",
+      "type" : "boolean",
+      "description" : "True if the item is available."
+    } ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ ],
+    "depends_on" : [ ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.dto`.\n2. Add the following imports:\n   - `lombok.AllArgsConstructor`\n   - `lombok.Builder`\n   - `lombok.Data`\n   - `lombok.NoArgsConstructor`\n3. Create a public class `MenuItemDto`.\n4. Annotate the class with `@Data`, `@NoArgsConstructor`, `@AllArgsConstructor`, and `@Builder`.\n5. Add the following private fields:\n   - `private String id;`\n   - `private String name;`\n   - `private String description;`\n   - `private String price;`\n   - `private String category;`\n   - `private String imageUrl;`\n   - `private boolean isVegetarian;`\n   - `private boolean isAvailable;`\n6. Do NOT add any other fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "CreateMenuItemRequest.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/dto/CreateMenuItemRequest.java",
+    "file_type" : "BACKEND",
+    "layer" : "DTO",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "DTO for creating or updating a menu item.",
+    "public_functions" : [ ],
+    "public_variables" : [ {
+      "name" : "name",
+      "type" : "String",
+      "description" : "@NotBlank, @Size(max=100)"
+    }, {
+      "name" : "description",
+      "type" : "String",
+      "description" : "@NotBlank, @Size(max=500)"
+    }, {
+      "name" : "price",
+      "type" : "String",
+      "description" : "@NotBlank, @Pattern for decimal format"
+    }, {
+      "name" : "category",
+      "type" : "String",
+      "description" : "@NotBlank, must match a MenuItemCategory enum value."
+    }, {
+      "name" : "imageUrl",
+      "type" : "String",
+      "description" : "@NotBlank, @URL"
+    }, {
+      "name" : "isVegetarian",
+      "type" : "Boolean",
+      "description" : "@NotNull"
+    }, {
+      "name" : "isAvailable",
+      "type" : "Boolean",
+      "description" : "@NotNull"
+    } ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ ],
+    "depends_on" : [ ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.dto`.\n2. Add the following imports:\n   - `jakarta.validation.constraints.NotBlank`\n   - `jakarta.validation.constraints.NotNull`\n   - `jakarta.validation.constraints.Pattern`\n   - `jakarta.validation.constraints.Size`\n   - `org.hibernate.validator.constraints.URL`\n   - `lombok.Data`\n3. Create a public class `CreateMenuItemRequest`.\n4. Annotate the class with `@Data`.\n5. Add the following private fields:\n   - `@NotBlank(message = \"Name is required\") @Size(max = 100, message = \"Name must be less than 100 characters\") private String name;`\n   - `@NotBlank(message = \"Description is required\") @Size(max = 500, message = \"Description must be less than 500 characters\") private String description;`\n   - `@NotBlank(message = \"Price is required\") @Pattern(regexp = \"^\\\\d+(\\\\.\\\\d{1,2})?$\", message = \"Price must be a valid decimal number\") private String price;`\n   - `@NotBlank(message = \"Category is required\") private String category;`\n   - `@NotBlank(message = \"Image URL is required\") @URL(message = \"Image URL must be a valid URL\") private String imageUrl;`\n   - `@NotNull(message = \"Vegetarian status is required\") private Boolean isVegetarian;`\n   - `@NotNull(message = \"Availability status is required\") private Boolean isAvailable;`\n6. Do NOT add any other fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "MenuService.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/service/MenuService.java",
+    "file_type" : "BACKEND",
+    "layer" : "SERVICE",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Business logic for managing menu items.",
+    "public_functions" : [ {
+      "name" : "getAllMenuItems",
+      "parameters" : [ "String category" ],
+      "return_type" : "List<MenuItemDto>",
+      "description" : "Gets all available menu items, optionally filtered by category."
+    }, {
+      "name" : "getMenuItemById",
+      "parameters" : [ "UUID id" ],
+      "return_type" : "MenuItemDto",
+      "description" : "Gets a single menu item by its ID."
+    }, {
+      "name" : "createMenuItem",
+      "parameters" : [ "CreateMenuItemRequest request" ],
+      "return_type" : "MenuItemDto",
+      "description" : "Creates a new menu item."
+    }, {
+      "name" : "updateMenuItem",
+      "parameters" : [ "UUID id", "CreateMenuItemRequest request" ],
+      "return_type" : "MenuItemDto",
+      "description" : "Updates an existing menu item."
+    }, {
+      "name" : "deleteMenuItem",
+      "parameters" : [ "UUID id" ],
+      "return_type" : "void",
+      "description" : "Deletes a menu item."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "backend/src/main/java/com/theurbanfoundrybaner/repository/MenuItemRepository.java", "backend/src/main/java/com/theurbanfoundrybaner/dto/MenuItemDto.java", "backend/src/main/java/com/theurbanfoundrybaner/dto/CreateMenuItemRequest.java" ],
+    "depends_on" : [ "backend/src/main/java/com/theurbanfoundrybaner/repository/MenuItemRepository.java", "backend/src/main/java/com/theurbanfoundrybaner/dto/MenuItemDto.java", "backend/src/main/java/com/theurbanfoundrybaner/dto/CreateMenuItemRequest.java" ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.service`.\n2. Add the following imports:\n   - `java.math.BigDecimal`\n   - `java.util.List`\n   - `java.util.UUID`\n   - `java.util.stream.Collectors`\n   - `org.springframework.stereotype.Service`\n   - `org.springframework.transaction.annotation.Transactional`\n   - `com.theurbanfoundrybaner.dto.CreateMenuItemRequest`\n   - `com.theurbanfoundrybaner.dto.MenuItemDto`\n   - `com.theurbanfoundrybaner.exception.ResourceNotFoundException`\n   - `com.theurbanfoundrybaner.model.MenuItem`\n   - `com.theurbanfoundrybaner.model.MenuItemCategory`\n   - `com.theurbanfoundrybaner.repository.MenuItemRepository`\n3. Create a public class `MenuService`.\n4. Annotate the class with `@Service`.\n5. Add a private final field `MenuItemRepository menuItemRepository` and inject it via a constructor.\n6. Create a public method `getAllMenuItems(String categoryString)` returning `List<MenuItemDto>`.\n   - Logic:\n     1. Declare a `List<MenuItem>` named `menuItems`.\n     2. If `categoryString` is not null and not blank:\n        a. Convert `categoryString` to `MenuItemCategory` enum. Use `MenuItemCategory.valueOf(categoryString.toUpperCase())`. Catch `IllegalArgumentException` and throw a new `IllegalArgumentException` with a user-friendly message if it fails.\n        b. Call `menuItemRepository.findByCategoryAndIsAvailableTrue(category)` and assign to `menuItems`.\n     3. Else, call `menuItemRepository.findByIsAvailableTrue()` and assign to `menuItems`.\n     4. Stream `menuItems`, map each to a DTO using `mapToDto`, and collect to a list.\n7. Create a public method `getAllMenuItemsForAdmin()` returning `List<MenuItemDto>`.\n   - Logic: Call `menuItemRepository.findAll()`, stream the result, map each item to a DTO using `mapToDto`, and collect to a list.\n8. Create a public method `getMenuItemById(UUID id)` returning `MenuItemDto`.\n   - Logic: Find the item by ID or throw `ResourceNotFoundException`. Then map it to a DTO.\n9. Create a public method `createMenuItem(CreateMenuItemRequest request)` returning `MenuItemDto`.\n   - Annotate with `@Transactional`.\n   - Logic:\n     1. Create a new `MenuItem` entity using its builder.\n     2. Populate its fields from the `request` DTO. Convert price string to `BigDecimal` and category string to `MenuItemCategory` enum.\n     3. Save the entity using the repository.\n     4. Map the saved entity to a DTO and return it.\n10. Create a public method `updateMenuItem(UUID id, CreateMenuItemRequest request)` returning `MenuItemDto`.\n    - Annotate with `@Transactional`.\n    - Logic:\n      1. Find the existing `MenuItem` by `id` or throw `ResourceNotFoundException`.\n      2. Update all fields of the entity from the `request` DTO.\n      3. Save the updated entity.\n      4. Map the saved entity to a DTO and return it.\n11. Create a public method `deleteMenuItem(UUID id)` returning `void`.\n    - Annotate with `@Transactional`.\n    - Logic:\n      1. Check if the menu item exists using `menuItemRepository.existsById(id)`. If not, throw `ResourceNotFoundException`.\n      2. Call `menuItemRepository.deleteById(id)`.\n12. Create a private helper method `mapToDto(MenuItem menuItem)` returning `MenuItemDto`.\n    - Logic: Use the `MenuItemDto` builder to create a DTO from the entity. Convert `id` to `String`, `price` to `String`, and `category` to `String`.",
+    "change_required" : true
+  }, {
+    "file_name" : "MenuController.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/controller/MenuController.java",
+    "file_type" : "BACKEND",
+    "layer" : "CONTROLLER",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Public REST controller for accessing menu information.",
+    "public_functions" : [ {
+      "name" : "getMenu",
+      "parameters" : [ "String category" ],
+      "return_type" : "ResponseEntity<List<MenuItemDto>>",
+      "description" : "Handles requests to get the public menu."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ {
+      "method" : "GET",
+      "path" : "/api/v1/menu",
+      "request_body" : null,
+      "response_body" : "List<MenuItemDto>",
+      "description" : "Retrieves all available menu items. Can be filtered by an optional 'category' query parameter."
+    } ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "backend/src/main/java/com/theurbanfoundrybaner/service/MenuService.java", "backend/src/main/java/com/theurbanfoundrybaner/dto/MenuItemDto.java" ],
+    "depends_on" : [ "backend/src/main/java/com/theurbanfoundrybaner/service/MenuService.java" ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.controller`.\n2. Add the following imports:\n   - `java.util.List`\n   - `org.springframework.http.ResponseEntity`\n   - `org.springframework.web.bind.annotation.GetMapping`\n   - `org.springframework.web.bind.annotation.RequestMapping`\n   - `org.springframework.web.bind.annotation.RequestParam`\n   - `org.springframework.web.bind.annotation.RestController`\n   - `com.theurbanfoundrybaner.dto.MenuItemDto`\n   - `com.theurbanfoundrybaner.service.MenuService`\n3. Create a public class `MenuController`.\n4. Annotate the class with `@RestController` and `@RequestMapping(\"/api/v1/menu\")`.\n5. Add a private final field `MenuService menuService` and inject it via a constructor.\n6. Create a public method `getMenu`:\n   - Signature: `public ResponseEntity<List<MenuItemDto>> getMenu(@RequestParam(required = false) String category)`.\n   - Annotate it with `@GetMapping`.\n   - Logic:\n     1. Call `menuService.getAllMenuItems(category)`.\n     2. Return the result wrapped in `ResponseEntity.ok()`.\n7. Do NOT add any other fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "AdminMenuController.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/controller/AdminMenuController.java",
+    "file_type" : "BACKEND",
+    "layer" : "CONTROLLER",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Admin-only REST controller for CRUD operations on menu items.",
+    "public_functions" : [ {
+      "name" : "createMenuItem",
+      "parameters" : [ "CreateMenuItemRequest request" ],
+      "return_type" : "ResponseEntity<MenuItemDto>",
+      "description" : "Creates a new menu item."
+    }, {
+      "name" : "getAllMenuItemsForAdmin",
+      "parameters" : [ ],
+      "return_type" : "ResponseEntity<List<MenuItemDto>>",
+      "description" : "Gets all menu items, including unavailable ones."
+    }, {
+      "name" : "updateMenuItem",
+      "parameters" : [ "UUID id", "CreateMenuItemRequest request" ],
+      "return_type" : "ResponseEntity<MenuItemDto>",
+      "description" : "Updates an existing menu item."
+    }, {
+      "name" : "deleteMenuItem",
+      "parameters" : [ "UUID id" ],
+      "return_type" : "ResponseEntity<Void>",
+      "description" : "Deletes a menu item."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ {
+      "method" : "POST",
+      "path" : "/api/v1/admin/menu-items",
+      "request_body" : "CreateMenuItemRequest",
+      "response_body" : "MenuItemDto",
+      "description" : "Creates a new menu item."
+    }, {
+      "method" : "GET",
+      "path" : "/api/v1/admin/menu-items",
+      "request_body" : null,
+      "response_body" : "List<MenuItemDto>",
+      "description" : "Retrieves all menu items for the admin panel."
+    }, {
+      "method" : "PUT",
+      "path" : "/api/v1/admin/menu-items/{id}",
+      "request_body" : "CreateMenuItemRequest",
+      "response_body" : "MenuItemDto",
+      "description" : "Updates a menu item by its ID."
+    }, {
+      "method" : "DELETE",
+      "path" : "/api/v1/admin/menu-items/{id}",
+      "request_body" : null,
+      "response_body" : "204 No Content",
+      "description" : "Deletes a menu item by its ID."
+    } ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "backend/src/main/java/com/theurbanfoundrybaner/service/MenuService.java", "backend/src/main/java/com/theurbanfoundrybaner/dto/MenuItemDto.java", "backend/src/main/java/com/theurbanfoundrybaner/dto/CreateMenuItemRequest.java" ],
+    "depends_on" : [ "backend/src/main/java/com/theurbanfoundrybaner/service/MenuService.java" ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.controller`.\n2. Add the following imports:\n   - `jakarta.validation.Valid`\n   - `java.util.List`\n   - `java.util.UUID`\n   - `org.springframework.http.HttpStatus`\n   - `org.springframework.http.ResponseEntity`\n   - `org.springframework.security.access.prepost.PreAuthorize`\n   - `org.springframework.web.bind.annotation.*`\n   - `com.theurbanfoundrybaner.dto.CreateMenuItemRequest`\n   - `com.theurbanfoundrybaner.dto.MenuItemDto`\n   - `com.theurbanfoundrybaner.service.MenuService`\n3. Create a public class `AdminMenuController`.\n4. Annotate the class with `@RestController`, `@RequestMapping(\"/api/v1/admin/menu-items\")`, and `@PreAuthorize(\"hasRole('ADMIN')\")`.\n5. Add a private final field `MenuService menuService` and inject it via a constructor.\n6. Create the `createMenuItem` method:\n   - Signature: `public ResponseEntity<MenuItemDto> createMenuItem(@Valid @RequestBody CreateMenuItemRequest request)`.\n   - Annotate with `@PostMapping`.\n   - Logic: Call `menuService.createMenuItem(request)` and return the result in a `ResponseEntity` with status `CREATED`.\n7. Create the `getAllMenuItemsForAdmin` method:\n   - Signature: `public ResponseEntity<List<MenuItemDto>> getAllMenuItemsForAdmin()`.\n   - Annotate with `@GetMapping`.\n   - Logic: Call `menuService.getAllMenuItemsForAdmin()` and return the result in `ResponseEntity.ok()`.\n8. Create the `updateMenuItem` method:\n   - Signature: `public ResponseEntity<MenuItemDto> updateMenuItem(@PathVariable UUID id, @Valid @RequestBody CreateMenuItemRequest request)`.\n   - Annotate with `@PutMapping(\"/{id}\")`.\n   - Logic: Call `menuService.updateMenuItem(id, request)` and return the result in `ResponseEntity.ok()`.\n9. Create the `deleteMenuItem` method:\n   - Signature: `public ResponseEntity<Void> deleteMenuItem(@PathVariable UUID id)`.\n   - Annotate with `@DeleteMapping(\"/{id}\")`.\n   - Logic: Call `menuService.deleteMenuItem(id)` and return `ResponseEntity.noContent().build()`.\n10. Do NOT add any other fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "ReservationStatus.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/model/ReservationStatus.java",
+    "file_type" : "BACKEND",
+    "layer" : "MODEL",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Enum for the status of a table reservation.",
+    "public_functions" : [ ],
+    "public_variables" : [ {
+      "name" : "PENDING",
+      "type" : "enum",
+      "description" : "Reservation is requested but not yet confirmed."
+    }, {
+      "name" : "CONFIRMED",
+      "type" : "enum",
+      "description" : "Reservation has been confirmed by admin."
+    }, {
+      "name" : "CANCELLED",
+      "type" : "enum",
+      "description" : "Reservation has been cancelled."
+    }, {
+      "name" : "COMPLETED",
+      "type" : "enum",
+      "description" : "The guests have completed their visit."
+    } ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ ],
+    "depends_on" : [ ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.model`.\n2. Create a public enum named `ReservationStatus`.\n3. Define the enum constants: `PENDING`, `CONFIRMED`, `CANCELLED`, `COMPLETED`.\n4. Do NOT add any fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "Reservation.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/model/Reservation.java",
+    "file_type" : "BACKEND",
+    "layer" : "MODEL",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Represents a customer's table reservation.",
+    "public_functions" : [ ],
+    "public_variables" : [ {
+      "name" : "id",
+      "type" : "UUID",
+      "description" : "Primary key, auto-generated."
+    }, {
+      "name" : "customerName",
+      "type" : "String",
+      "description" : "Name of the person making the reservation. Not null."
+    }, {
+      "name" : "customerPhone",
+      "type" : "String",
+      "description" : "Contact phone number. Not null."
+    }, {
+      "name" : "customerEmail",
+      "type" : "String",
+      "description" : "Contact email address. Not null."
+    }, {
+      "name" : "reservationTime",
+      "type" : "Instant",
+      "description" : "The date and time of the reservation. Not null."
+    }, {
+      "name" : "partySize",
+      "type" : "int",
+      "description" : "Number of guests. Not null."
+    }, {
+      "name" : "status",
+      "type" : "ReservationStatus",
+      "description" : "Current status of the reservation. Not null."
+    }, {
+      "name" : "specialRequests",
+      "type" : "String",
+      "description" : "Any special requests from the customer. Nullable, max 500 chars."
+    } ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "backend/src/main/java/com/theurbanfoundrybaner/model/ReservationStatus.java" ],
+    "depends_on" : [ "backend/src/main/java/com/theurbanfoundrybaner/model/ReservationStatus.java" ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.model`.\n2. Add the following imports:\n   - `jakarta.persistence.*`\n   - `java.time.Instant`\n   - `java.util.UUID`\n   - `lombok.AllArgsConstructor`\n   - `lombok.Builder`\n   - `lombok.Data`\n   - `lombok.NoArgsConstructor`\n3. Create a public class named `Reservation`.\n4. Annotate the class with `@Entity`, `@Table(name = \"reservations\")`, `@Data`, `@NoArgsConstructor`, `@AllArgsConstructor`, and `@Builder`.\n5. Add the following private fields:\n   - `@Id @GeneratedValue(strategy = GenerationType.AUTO) @Column(columnDefinition = \"uuid\", updatable = false, nullable = false) private UUID id;`\n   - `@Column(nullable = false) private String customerName;`\n   - `@Column(nullable = false) private String customerPhone;`\n   - `@Column(nullable = false) private String customerEmail;`\n   - `@Column(nullable = false) private Instant reservationTime;`\n   - `@Column(nullable = false) private int partySize;`\n   - `@Enumerated(EnumType.STRING) @Column(nullable = false) private ReservationStatus status;`\n   - `@Column(length = 500) private String specialRequests;`\n6. Do NOT add any other fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "ReservationRepository.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/repository/ReservationRepository.java",
+    "file_type" : "BACKEND",
+    "layer" : "REPOSITORY",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "JPA repository for Reservation entities.",
+    "public_functions" : [ {
+      "name" : "findByReservationTimeBetween",
+      "parameters" : [ "Instant start", "Instant end" ],
+      "return_type" : "List<Reservation>",
+      "description" : "Finds all reservations within a given time range."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "backend/src/main/java/com/theurbanfoundrybaner/model/Reservation.java" ],
+    "depends_on" : [ "backend/src/main/java/com/theurbanfoundrybaner/model/Reservation.java" ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.repository`.\n2. Add the following imports:\n   - `java.time.Instant`\n   - `java.util.List`\n   - `java.util.UUID`\n   - `org.springframework.data.jpa.repository.JpaRepository`\n   - `com.theurbanfoundrybaner.model.Reservation`\n3. Create a public interface named `ReservationRepository` that extends `JpaRepository<Reservation, UUID>`.\n4. Add the following method signature to the interface:\n   - `List<Reservation> findByReservationTimeBetween(Instant start, Instant end);`\n5. Do NOT add any other methods or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "ReservationDto.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/dto/ReservationDto.java",
+    "file_type" : "BACKEND",
+    "layer" : "DTO",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Public-facing representation of a reservation.",
+    "public_functions" : [ ],
+    "public_variables" : [ {
+      "name" : "id",
+      "type" : "String",
+      "description" : "UUID of the reservation."
+    }, {
+      "name" : "customerName",
+      "type" : "String",
+      "description" : "Customer's name."
+    }, {
+      "name" : "customerPhone",
+      "type" : "String",
+      "description" : "Customer's phone."
+    }, {
+      "name" : "customerEmail",
+      "type" : "String",
+      "description" : "Customer's email."
+    }, {
+      "name" : "reservationTime",
+      "type" : "String",
+      "description" : "ISO-8601 formatted date and time of the reservation."
+    }, {
+      "name" : "partySize",
+      "type" : "int",
+      "description" : "Number of guests."
+    }, {
+      "name" : "status",
+      "type" : "String",
+      "description" : "Status of the reservation."
+    }, {
+      "name" : "specialRequests",
+      "type" : "String",
+      "description" : "Special requests."
+    } ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ ],
+    "depends_on" : [ ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.dto`.\n2. Add the following imports:\n   - `lombok.AllArgsConstructor`\n   - `lombok.Builder`\n   - `lombok.Data`\n   - `lombok.NoArgsConstructor`\n3. Create a public class `ReservationDto`.\n4. Annotate the class with `@Data`, `@NoArgsConstructor`, `@AllArgsConstructor`, and `@Builder`.\n5. Add the following private fields:\n   - `private String id;`\n   - `private String customerName;`\n   - `private String customerPhone;`\n   - `private String customerEmail;`\n   - `private String reservationTime;`\n   - `private int partySize;`\n   - `private String status;`\n   - `private String specialRequests;`\n6. Do NOT add any other fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "CreateReservationRequest.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/dto/CreateReservationRequest.java",
+    "file_type" : "BACKEND",
+    "layer" : "DTO",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "DTO for creating a new reservation.",
+    "public_functions" : [ ],
+    "public_variables" : [ {
+      "name" : "customerName",
+      "type" : "String",
+      "description" : "@NotBlank"
+    }, {
+      "name" : "customerPhone",
+      "type" : "String",
+      "description" : "@NotBlank"
+    }, {
+      "name" : "customerEmail",
+      "type" : "String",
+      "description" : "@NotBlank @Email"
+    }, {
+      "name" : "reservationTime",
+      "type" : "String",
+      "description" : "@NotBlank, ISO-8601 format."
+    }, {
+      "name" : "partySize",
+      "type" : "Integer",
+      "description" : "@NotNull @Min(1)"
+    }, {
+      "name" : "specialRequests",
+      "type" : "String",
+      "description" : "@Size(max=500)"
+    } ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ ],
+    "depends_on" : [ ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.dto`.\n2. Add the following imports:\n   - `jakarta.validation.constraints.Email`\n   - `jakarta.validation.constraints.Min`\n   - `jakarta.validation.constraints.NotBlank`\n   - `jakarta.validation.constraints.NotNull`\n   - `jakarta.validation.constraints.Size`\n   - `lombok.Data`\n3. Create a public class `CreateReservationRequest`.\n4. Annotate the class with `@Data`.\n5. Add the following private fields:\n   - `@NotBlank(message = \"Customer name is required\") private String customerName;`\n   - `@NotBlank(message = \"Customer phone is required\") private String customerPhone;`\n   - `@NotBlank(message = \"Customer email is required\") @Email(message = \"A valid email is required\") private String customerEmail;`\n   - `@NotBlank(message = \"Reservation time is required\") private String reservationTime;`\n   - `@NotNull(message = \"Party size is required\") @Min(value = 1, message = \"Party size must be at least 1\") private Integer partySize;`\n   - `@Size(max = 500, message = \"Special requests must be less than 500 characters\") private String specialRequests;`\n6. Do NOT add any other fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "UpdateReservationStatusRequest.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/dto/UpdateReservationStatusRequest.java",
+    "file_type" : "BACKEND",
+    "layer" : "DTO",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "DTO for an admin to update the status of a reservation.",
+    "public_functions" : [ ],
+    "public_variables" : [ {
+      "name" : "status",
+      "type" : "String",
+      "description" : "@NotBlank, must match a ReservationStatus value."
+    } ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ ],
+    "depends_on" : [ ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.dto`.\n2. Add the following imports:\n   - `jakarta.validation.constraints.NotBlank`\n   - `lombok.Data`\n3. Create a public class `UpdateReservationStatusRequest`.\n4. Annotate the class with `@Data`.\n5. Add the following private field:\n   - `@NotBlank(message = \"Status is required\") private String status;`\n6. Do NOT add any other fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "ReservationService.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/service/ReservationService.java",
+    "file_type" : "BACKEND",
+    "layer" : "SERVICE",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Business logic for managing reservations.",
+    "public_functions" : [ {
+      "name" : "createReservation",
+      "parameters" : [ "CreateReservationRequest request" ],
+      "return_type" : "ReservationDto",
+      "description" : "Creates a new reservation with PENDING status."
+    }, {
+      "name" : "getAllReservations",
+      "parameters" : [ ],
+      "return_type" : "List<ReservationDto>",
+      "description" : "Retrieves all reservations for the admin panel."
+    }, {
+      "name" : "updateReservationStatus",
+      "parameters" : [ "UUID id", "UpdateReservationStatusRequest request" ],
+      "return_type" : "ReservationDto",
+      "description" : "Updates the status of an existing reservation."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "backend/src/main/java/com/theurbanfoundrybaner/repository/ReservationRepository.java", "backend/src/main/java/com/theurbanfoundrybaner/dto/ReservationDto.java", "backend/src/main/java/com/theurbanfoundrybaner/dto/CreateReservationRequest.java", "backend/src/main/java/com/theurbanfoundrybaner/dto/UpdateReservationStatusRequest.java" ],
+    "depends_on" : [ "backend/src/main/java/com/theurbanfoundrybaner/repository/ReservationRepository.java", "backend/src/main/java/com/theurbanfoundrybaner/dto/ReservationDto.java", "backend/src/main/java/com/theurbanfoundrybaner/dto/CreateReservationRequest.java", "backend/src/main/java/com/theurbanfoundrybaner/dto/UpdateReservationStatusRequest.java" ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.service`.\n2. Add the following imports:\n   - `java.time.Instant`\n   - `java.util.List`\n   - `java.util.UUID`\n   - `java.util.stream.Collectors`\n   - `org.springframework.stereotype.Service`\n   - `org.springframework.transaction.annotation.Transactional`\n   - `com.theurbanfoundrybaner.dto.CreateReservationRequest`\n   - `com.theurbanfoundrybaner.dto.ReservationDto`\n   - `com.theurbanfoundrybaner.dto.UpdateReservationStatusRequest`\n   - `com.theurbanfoundrybaner.exception.ResourceNotFoundException`\n   - `com.theurbanfoundrybaner.model.Reservation`\n   - `com.theurbanfoundrybaner.model.ReservationStatus`\n   - `com.theurbanfoundrybaner.repository.ReservationRepository`\n3. Create a public class `ReservationService`.\n4. Annotate the class with `@Service`.\n5. Add a private final field `ReservationRepository reservationRepository` and inject it via a constructor.\n6. Create a public method `createReservation(CreateReservationRequest request)` returning `ReservationDto`.\n   - Annotate with `@Transactional`.\n   - Logic:\n     1. Create a new `Reservation` entity using its builder.\n     2. Populate its fields from the `request` DTO. Parse the `reservationTime` string to an `Instant`.\n     3. Set the status to `ReservationStatus.PENDING`.\n     4. Save the entity using the repository.\n     5. Map the saved entity to a DTO and return it.\n7. Create a public method `getAllReservations()` returning `List<ReservationDto>`.\n   - Logic: Call `reservationRepository.findAll()`, stream the result, map each to a DTO, and collect to a list.\n8. Create a public method `updateReservationStatus(UUID id, UpdateReservationStatusRequest request)` returning `ReservationDto`.\n   - Annotate with `@Transactional`.\n   - Logic:\n     1. Find the existing `Reservation` by `id` or throw `ResourceNotFoundException`.\n     2. Convert the status string from the request to a `ReservationStatus` enum value.\n     3. Set the new status on the entity.\n     4. Save the updated entity.\n     5. Map the saved entity to a DTO and return it.\n9. Create a private helper method `mapToDto(Reservation reservation)` returning `ReservationDto`.\n   - Logic: Use the `ReservationDto` builder to create a DTO from the entity. Convert `id` to `String`, `reservationTime` to an ISO-8601 `String`, and `status` to `String`.\n10. Do NOT add any other fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "ReservationController.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/controller/ReservationController.java",
+    "file_type" : "BACKEND",
+    "layer" : "CONTROLLER",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Public REST controller for creating table reservations.",
+    "public_functions" : [ {
+      "name" : "createReservation",
+      "parameters" : [ "CreateReservationRequest request" ],
+      "return_type" : "ResponseEntity<ReservationDto>",
+      "description" : "Handles public requests to create a new reservation."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ {
+      "method" : "POST",
+      "path" : "/api/v1/reservations",
+      "request_body" : "CreateReservationRequest",
+      "response_body" : "ReservationDto",
+      "description" : "Submits a new table reservation request."
+    } ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "backend/src/main/java/com/theurbanfoundrybaner/service/ReservationService.java", "backend/src/main/java/com/theurbanfoundrybaner/dto/CreateReservationRequest.java", "backend/src/main/java/com/theurbanfoundrybaner/dto/ReservationDto.java" ],
+    "depends_on" : [ "backend/src/main/java/com/theurbanfoundrybaner/service/ReservationService.java" ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.controller`.\n2. Add the following imports:\n   - `jakarta.validation.Valid`\n   - `org.springframework.http.HttpStatus`\n   - `org.springframework.http.ResponseEntity`\n   - `org.springframework.web.bind.annotation.PostMapping`\n   - `org.springframework.web.bind.annotation.RequestBody`\n   - `org.springframework.web.bind.annotation.RequestMapping`\n   - `org.springframework.web.bind.annotation.RestController`\n   - `com.theurbanfoundrybaner.dto.CreateReservationRequest`\n   - `com.theurbanfoundrybaner.dto.ReservationDto`\n   - `com.theurbanfoundrybaner.service.ReservationService`\n3. Create a public class `ReservationController`.\n4. Annotate the class with `@RestController` and `@RequestMapping(\"/api/v1/reservations\")`.\n5. Add a private final field `ReservationService reservationService` and inject it via a constructor.\n6. Create a public method `createReservation`:\n   - Signature: `public ResponseEntity<ReservationDto> createReservation(@Valid @RequestBody CreateReservationRequest request)`.\n   - Annotate it with `@PostMapping`.\n   - Logic:\n     1. Call `reservationService.createReservation(request)`.\n     2. Return the result in a `ResponseEntity` with status `CREATED`.\n7. Do NOT add any other fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "AdminReservationController.java",
+    "file_path" : "backend/src/main/java/com/theurbanfoundrybaner/controller/AdminReservationController.java",
+    "file_type" : "BACKEND",
+    "layer" : "CONTROLLER",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Admin-only REST controller for managing reservations.",
+    "public_functions" : [ {
+      "name" : "getAllReservations",
+      "parameters" : [ ],
+      "return_type" : "ResponseEntity<List<ReservationDto>>",
+      "description" : "Gets all reservations."
+    }, {
+      "name" : "updateReservationStatus",
+      "parameters" : [ "UUID id", "UpdateReservationStatusRequest request" ],
+      "return_type" : "ResponseEntity<ReservationDto>",
+      "description" : "Updates a reservation's status."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ {
+      "method" : "GET",
+      "path" : "/api/v1/admin/reservations",
+      "request_body" : null,
+      "response_body" : "List<ReservationDto>",
+      "description" : "Retrieves all reservations for the admin panel."
+    }, {
+      "method" : "PATCH",
+      "path" : "/api/v1/admin/reservations/{id}/status",
+      "request_body" : "UpdateReservationStatusRequest",
+      "response_body" : "ReservationDto",
+      "description" : "Updates the status of a reservation (e.g., to CONFIRMED or CANCELLED)."
+    } ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "backend/src/main/java/com/theurbanfoundrybaner/service/ReservationService.java", "backend/src/main/java/com/theurbanfoundrybaner/dto/ReservationDto.java", "backend/src/main/java/com/theurbanfoundrybaner/dto/UpdateReservationStatusRequest.java" ],
+    "depends_on" : [ "backend/src/main/java/com/theurbanfoundrybaner/service/ReservationService.java" ],
+    "coding_instruction" : "1. Set the package to `com.theurbanfoundrybaner.controller`.\n2. Add the following imports:\n   - `jakarta.validation.Valid`\n   - `java.util.List`\n   - `java.util.UUID`\n   - `org.springframework.http.ResponseEntity`\n   - `org.springframework.security.access.prepost.PreAuthorize`\n   - `org.springframework.web.bind.annotation.*`\n   - `com.theurbanfoundrybaner.dto.ReservationDto`\n   - `com.theurbanfoundrybaner.dto.UpdateReservationStatusRequest`\n   - `com.theurbanfoundrybaner.service.ReservationService`\n3. Create a public class `AdminReservationController`.\n4. Annotate the class with `@RestController`, `@RequestMapping(\"/api/v1/admin/reservations\")`, and `@PreAuthorize(\"hasRole('ADMIN')\")`.\n5. Add a private final field `ReservationService reservationService` and inject it via a constructor.\n6. Create the `getAllReservations` method:\n   - Signature: `public ResponseEntity<List<ReservationDto>> getAllReservations()`.\n   - Annotate with `@GetMapping`.\n   - Logic: Call `reservationService.getAllReservations()` and return the result in `ResponseEntity.ok()`.\n7. Create the `updateReservationStatus` method:\n   - Signature: `public ResponseEntity<ReservationDto> updateReservationStatus(@PathVariable UUID id, @Valid @RequestBody UpdateReservationStatusRequest request)`.\n   - Annotate with `@PatchMapping(\"/{id}/status\")`.\n   - Logic: Call `reservationService.updateReservationStatus(id, request)` and return the result in `ResponseEntity.ok()`.\n8. Do NOT add any other fields, methods, or annotations.",
+    "change_required" : true
+  }, {
+    "file_name" : "client.ts",
+    "file_path" : "frontend/src/api/client.ts",
+    "file_type" : "FRONTEND",
+    "layer" : "SERVICE",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Axios singleton for making API requests, with an interceptor to add the auth token.",
+    "public_functions" : [ ],
+    "public_variables" : [ {
+      "name" : "apiClient",
+      "type" : "AxiosInstance",
+      "description" : "The configured Axios instance for all backend communication."
+    } ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ ],
+    "depends_on" : [ ],
+    "coding_instruction" : "1. Add the following imports:\n   - `import axios, { AxiosInstance } from 'axios';`\n2. Create and export an Axios instance named `apiClient`:\n   - `export const apiClient: AxiosInstance = axios.create({ baseURL: import.meta.env.VITE_API_BASE_URL || '/api/v1' });`\n3. Add a request interceptor to `apiClient`:\n   - `apiClient.interceptors.request.use(config => { ... });`\n4. Inside the interceptor logic:\n   - Retrieve the auth token from local storage: `const token = localStorage.getItem('authToken');`\n   - If a token exists, add the Authorization header to the request config: `if (token) { config.headers.Authorization = `Bearer ${token}`; }`\n   - Return the modified `config` object.\n5. Do NOT add any other functions, variables, or exports.",
+    "change_required" : true
+  }, {
+    "file_name" : "authService.ts",
+    "file_path" : "frontend/src/services/authService.ts",
+    "file_type" : "FRONTEND",
+    "layer" : "SERVICE",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Service for handling authentication API calls.",
+    "public_functions" : [ {
+      "name" : "login",
+      "parameters" : [ "AuthRequest" ],
+      "return_type" : "Promise<AuthResponse>",
+      "description" : "Sends login credentials to the backend."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ {
+      "method" : "POST",
+      "path" : "/api/v1/auth/login",
+      "request_body" : null,
+      "response_body" : null,
+      "description" : "Logs in the admin user."
+    } ],
+    "imports_from" : [ "frontend/src/api/client.ts" ],
+    "depends_on" : [ "frontend/src/api/client.ts" ],
+    "coding_instruction" : "1. Add the following imports:\n   - `import { apiClient } from '@/api/client';`\n2. Define and export an interface `AuthRequest` with the following fields:\n   - `email: string;`\n   - `password: string;`\n3. Define and export an interface `AuthResponse` with the following fields:\n   - `token: string;`\n   - `role: string;`\n   - `expiresAt: number;`\n4. Create and export an async function `login`:\n   - Signature: `export const login = async (credentials: AuthRequest): Promise<AuthResponse> => { ... };`\n   - Logic:\n     1. Make a POST request using `apiClient.post<AuthResponse>('/auth/login', credentials)`.\n     2. Return the `data` property from the response.\n5. Do NOT add any other functions, variables, or exports.",
+    "change_required" : true
+  }, {
+    "file_name" : "AuthContext.tsx",
+    "file_path" : "frontend/src/context/AuthContext.tsx",
+    "file_type" : "FRONTEND",
+    "layer" : "CONTEXT",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2024-05-22",
+    "status" : "PLANNED",
+    "description" : "React context to manage and provide authentication state throughout the application.",
+    "public_functions" : [ {
+      "name" : "AuthProvider",
+      "parameters" : [ "{ children: React.ReactNode }" ],
+      "return_type" : "JSX.Element",
+      "description" : "Provider component that wraps the app."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "frontend/src/services/authService.ts" ],
+    "depends_on" : [ "frontend/src/services/authService.ts" ],
+    "coding_instruction" : "1. Add the following imports:\n   - `import React, { createContext, useState, useEffect, ReactNode } from 'react';`\n   - `import { useNavigate } from 'react-router-dom';`\n   - `import * as authService from '@/services/authService';`\n2. Define an interface `User` with fields: `role: string;` and `email: string;`\n3. Define an interface `AuthContextType` with fields:\n   - `user: User | null;`\n   - `token: string | null;`\n   - `isAuthenticated: boolean;`\n   - `isAdmin: boolean;`\n   - `login: (credentials: authService.AuthRequest) => Promise<void>;`\n   - `logout: () => void;`\n4. Create the context: `export const AuthContext = createContext<AuthContextType | null>(null);`\n5. Create the provider component `AuthProvider`:\n   - Signature: `export const AuthProvider = ({ children }: { children: ReactNode }) => { ... };`\n   - Logic:\n     1. Initialize state: `const [token, setToken] = useState<string | null>(localStorage.getItem('authToken'));`\n     2. Initialize state: `const [user, setUser] = useState<User | null>(() => { ... });` In the initializer function, try to get 'authUser' from localStorage, parse it, and return it, otherwise return null.\n     3. Get `useNavigate()` hook: `const navigate = useNavigate();`\n     4. Implement the `login` async function:\n        a. It takes `credentials: authService.AuthRequest`.\n        b. Call `authService.login(credentials)`.\n        c. On success, create a `newUser` object with `role` and `email` (from credentials).\n        d. Set state: `setToken(response.token); setUser(newUser);`\n        e. Store in localStorage: `localStorage.setItem('authToken', response.token); localStorage.setItem('authUser', JSON.stringify(newUser));`\n        f. Navigate to `/admin`.\n     5. Implement the `logout` function:\n        a. Clear state: `setToken(null); setUser(null);`\n        b. Clear localStorage: `localStorage.removeItem('authToken'); localStorage.removeItem('authUser');`\n        c. Navigate to `/login`.\n     6. Define derived state: `const isAuthenticated = !!token;` and `const isAdmin = user?.role === 'ADMIN';`\n     7. Create the context value object `value` with all the state and functions.\n     8. Return `<AuthContext.Provider value={value}>{children}</AuthContext.Provider>`.\n6. Do NOT add any other components, functions, or exports.",
+    "change_required" : true
+  }, {
+    "file_name" : "useAuth.ts",
+    "file_path" : "frontend/src/hooks/useAuth.ts",
+    "file_type" : "FRONTEND",
+    "layer" : "HOOK",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Custom hook to easily access authentication context.",
+    "public_functions" : [ {
+      "name" : "useAuth",
+      "parameters" : [ ],
+      "return_type" : "{ user, token, login, logout, isAuthenticated, isAdmin }",
+      "description" : "Provides auth state and actions from AuthContext."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "frontend/src/context/AuthContext.tsx" ],
+    "depends_on" : [ "frontend/src/context/AuthContext.tsx" ],
+    "coding_instruction" : "1. Add the following imports:\n   - `import { useContext } from 'react';`\n   - `import { AuthContext } from '@/context/AuthContext';`\n2. Create and export a function `useAuth`:\n   - Signature: `export const useAuth = () => { ... };`\n   - Logic:\n     1. Get the context value: `const context = useContext(AuthContext);`\n     2. Check if the context is null: `if (!context) { throw new Error('useAuth must be used within an AuthProvider'); }`\n     3. Return the `context`.\n3. Do NOT add any other functions, variables, or exports.",
+    "change_required" : true
+  }, {
+    "file_name" : "ProtectedRoute.tsx",
+    "file_path" : "frontend/src/components/ProtectedRoute.tsx",
+    "file_type" : "FRONTEND",
+    "layer" : "COMPONENT",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "A component that renders its children only if the user is authenticated, otherwise redirects to login.",
+    "public_functions" : [ {
+      "name" : "ProtectedRoute",
+      "parameters" : [ "{ children: JSX.Element }" ],
+      "return_type" : "JSX.Element",
+      "description" : "Component wrapper for protected routes."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "frontend/src/hooks/useAuth.ts" ],
+    "depends_on" : [ "frontend/src/hooks/useAuth.ts" ],
+    "coding_instruction" : "1. Add the following imports:\n   - `import { Navigate } from 'react-router-dom';`\n   - `import { useAuth } from '@/hooks/useAuth';`\n2. Create and export a component `ProtectedRoute`:\n   - Signature: `export const ProtectedRoute = ({ children }: { children: JSX.Element }) => { ... };`\n   - Logic:\n     1. Get `isAuthenticated` from the `useAuth()` hook.\n     2. If `isAuthenticated` is false, return `<Navigate to=\"/login\" replace />`.\n     3. Otherwise, return the `children`.\n3. Do NOT add any other components, functions, or exports.",
+    "change_required" : true
+  }, {
+    "file_name" : "LoginPage.tsx",
+    "file_path" : "frontend/src/pages/LoginPage.tsx",
+    "file_type" : "FRONTEND",
+    "layer" : "PAGE",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Page containing the login form for administrators.",
+    "public_functions" : [ {
+      "name" : "LoginPage",
+      "parameters" : [ ],
+      "return_type" : "JSX.Element",
+      "description" : "Renders the admin login UI."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "frontend/src/hooks/useAuth.ts" ],
+    "depends_on" : [ "frontend/src/hooks/useAuth.ts" ],
+    "coding_instruction" : "1. Add the following imports:\n   - `import { useForm } from 'react-hook-form';`\n   - `import { zodResolver } from '@hookform/resolvers/zod';`\n   - `import { z } from 'zod';`\n   - `import { useAuth } from '@/hooks/useAuth';`\n   - `import { Button } from '@/components/ui/button';`\n   - `import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';`\n   - `import { Input } from '@/components/ui/input';`\n   - `import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';`\n   - `import { useState } from 'react';`\n2. Define a Zod schema `formSchema` for the login form:\n   - `email: z.string().email({ message: 'Invalid email address.' })`\n   - `password: z.string().min(1, { message: 'Password is required.' })`\n3. Create and export a default component `LoginPage`.\n   - Logic:\n     1. Use state for error messages: `const [error, setError] = useState<string | null>(null);`\n     2. Get the `login` function from `useAuth()`.\n     3. Initialize `react-hook-form`: `const form = useForm<z.infer<typeof formSchema>>({ resolver: zodResolver(formSchema), defaultValues: { email: '', password: '' } });`\n     4. Create an `onSubmit` function that takes `values: z.infer<typeof formSchema>`.\n        a. Reset the error state: `setError(null);`\n        b. Wrap the login call in a try/catch block.\n        c. Call `await login(values);`\n        d. In the catch block, set the error state: `setError('Invalid email or password.');`\n     5. Render the UI:\n        a. A central `Card` component.\n        b. `CardHeader` with `CardTitle` 'Admin Login' and `CardDescription`.\n        c. `CardContent` containing a `Form` component from shadcn.\n        d. Inside the form, use `FormField` for 'email' and 'password' fields, containing `FormItem`, `FormLabel`, `FormControl` with an `Input` component, and `FormMessage`.\n        e. The password input should have `type=\"password\"`.\n        f. Display the `error` state message if it's not null.\n        g. A `Button` with `type=\"submit\"` to submit the form. The button should be disabled when the form is submitting (`form.formState.isSubmitting`).\n4. Do NOT add any other components, functions, or exports.",
+    "change_required" : true
+  }, {
+    "file_name" : "AdminDashboardPage.tsx",
+    "file_path" : "frontend/src/pages/AdminDashboardPage.tsx",
+    "file_type" : "FRONTEND",
+    "layer" : "PAGE",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "The main landing page for the admin area with navigation to management sections.",
+    "public_functions" : [ {
+      "name" : "AdminDashboardPage",
+      "parameters" : [ ],
+      "return_type" : "JSX.Element",
+      "description" : "Renders the admin dashboard layout and overview."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "frontend/src/hooks/useAuth.ts" ],
+    "depends_on" : [ "frontend/src/hooks/useAuth.ts" ],
+    "coding_instruction" : "1. Add the following imports:\n   - `import { Link } from 'react-router-dom';`\n   - `import { Button } from '@/components/ui/button';`\n   - `import { useAuth } from '@/hooks/useAuth';`\n2. Create and export a default component `AdminDashboardPage`.\n   - Logic:\n     1. Get the `logout` function and `user` object from `useAuth()`.\n     2. Render a main container div.\n     3. Inside, render a header with a title `h1` 'Admin Dashboard' and a welcome message `p` for the `user.email`.\n     4. Add a `Button` that calls `logout` when clicked.\n     5. Render a navigation section with `Link` components:\n        - A `Link` to `/admin/menu` with text 'Manage Menu'.\n        - A `Link` to `/admin/reservations` with text 'Manage Reservations'.\n     6. Style the links to look like buttons or cards for better UI.\n3. Do NOT add any other components, functions, or exports.",
+    "change_required" : true
+  }, {
+    "file_name" : "adminMenuService.ts",
+    "file_path" : "frontend/src/services/adminMenuService.ts",
+    "file_type" : "FRONTEND",
+    "layer" : "SERVICE",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Service for admin CRUD operations on menu items.",
+    "public_functions" : [ {
+      "name" : "getAllMenuItems",
+      "parameters" : [ ],
+      "return_type" : "Promise<MenuItemDto[]>",
+      "description" : "Fetches all menu items."
+    }, {
+      "name" : "createMenuItem",
+      "parameters" : [ "CreateMenuItemRequest" ],
+      "return_type" : "Promise<MenuItemDto>",
+      "description" : "Creates a new menu item."
+    }, {
+      "name" : "updateMenuItem",
+      "parameters" : [ "string id", "CreateMenuItemRequest" ],
+      "return_type" : "Promise<MenuItemDto>",
+      "description" : "Updates an existing menu item."
+    }, {
+      "name" : "deleteMenuItem",
+      "parameters" : [ "string id" ],
+      "return_type" : "Promise<void>",
+      "description" : "Deletes a menu item."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ {
+      "method" : "GET",
+      "path" : "/api/v1/admin/menu-items",
+      "request_body" : null,
+      "response_body" : null,
+      "description" : "Get all menu items."
+    }, {
+      "method" : "POST",
+      "path" : "/api/v1/admin/menu-items",
+      "request_body" : null,
+      "response_body" : null,
+      "description" : "Create a menu item."
+    }, {
+      "method" : "PUT",
+      "path" : "/api/v1/admin/menu-items/{id}",
+      "request_body" : null,
+      "response_body" : null,
+      "description" : "Update a menu item."
+    }, {
+      "method" : "DELETE",
+      "path" : "/api/v1/admin/menu-items/{id}",
+      "request_body" : null,
+      "response_body" : null,
+      "description" : "Delete a menu item."
+    } ],
+    "imports_from" : [ "frontend/src/api/client.ts" ],
+    "depends_on" : [ "frontend/src/api/client.ts" ],
+    "coding_instruction" : "1. Add the following imports:\n   - `import { apiClient } from '@/api/client';`\n2. Define and export an interface `MenuItemDto` with fields: `id`, `name`, `description`, `price`, `category`, `imageUrl` (all strings), and `isVegetarian`, `isAvailable` (both booleans).\n3. Define and export an interface `CreateMenuItemRequest` with fields: `name`, `description`, `price`, `category`, `imageUrl` (all strings), and `isVegetarian`, `isAvailable` (both booleans).\n4. Create and export `getAllMenuItems`: `async (): Promise<MenuItemDto[]> => { const response = await apiClient.get('/admin/menu-items'); return response.data; }`\n5. Create and export `createMenuItem`: `async (data: CreateMenuItemRequest): Promise<MenuItemDto> => { const response = await apiClient.post('/admin/menu-items', data); return response.data; }`\n6. Create and export `updateMenuItem`: `async (id: string, data: CreateMenuItemRequest): Promise<MenuItemDto> => { const response = await apiClient.put(`/admin/menu-items/${id}`, data); return response.data; }`\n7. Create and export `deleteMenuItem`: `async (id: string): Promise<void> => { await apiClient.delete(`/admin/menu-items/${id}`); }`\n8. Do NOT add any other code.",
+    "change_required" : true
+  }, {
+    "file_name" : "AdminMenuPage.tsx",
+    "file_path" : "frontend/src/pages/AdminMenuPage.tsx",
+    "file_type" : "FRONTEND",
+    "layer" : "PAGE",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Admin page for managing the restaurant's menu.",
+    "public_functions" : [ {
+      "name" : "AdminMenuPage",
+      "parameters" : [ ],
+      "return_type" : "JSX.Element",
+      "description" : "Renders a data table for menu item CRUD."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "frontend/src/hooks/useAdminMenu.ts" ],
+    "depends_on" : [ "frontend/src/hooks/useAdminMenu.ts" ],
+    "coding_instruction" : "1. Add imports for React, `useAdminMenu` hook, and various shadcn components like `Table`, `Button`, `Dialog`, `Input`, `Checkbox`, `Select`.\n2. Create and export a default component `AdminMenuPage`.\n3. Inside the component, call `useAdminMenu()` to get `menuItems`, `isLoading`, `createItem`, `updateItem`, `deleteItem`.\n4. Implement the main return block:\n   - If `isLoading`, show a loading spinner or message.\n   - Render a page header with a title 'Menu Management' and a 'Create New Item' `Button`.\n   - This button should control a `Dialog` component for creating/editing items.\n   - Render a data table (using shadcn `Table` components) to display the `menuItems`.\n   - Table columns should be: Name, Category, Price, Available, Vegetarian, and an Actions column.\n   - The Actions column for each row should contain an 'Edit' button and a 'Delete' button.\n5. Implement the Create/Edit Dialog:\n   - Use a single dialog and form for both creating and editing. Manage state to know if you are editing or creating and to hold the current item's data.\n   - The form inside the dialog should use `react-hook-form` and `zod` for validation, similar to the login page.\n   - The form should have inputs for all `MenuItem` fields (`name`, `description`, `price`, etc.). Use `Select` for category, `Checkbox` for booleans.\n   - The form's submit handler should call either `createItem.mutate(data)` or `updateItem.mutate({ id: editingItemId, ...data })` based on the current mode.\n6. Implement Delete functionality:\n   - The 'Delete' button in a table row should trigger a confirmation dialog (e.g., shadcn `AlertDialog`).\n   - On confirmation, call `deleteItem.mutate(itemId)`.\n7. Handle mutation states (e.g., disable form buttons while `createItem.isPending`).",
+    "change_required" : true
+  }, {
+    "file_name" : "useAdminMenu.ts",
+    "file_path" : "frontend/src/hooks/useAdminMenu.ts",
+    "file_type" : "FRONTEND",
+    "layer" : "HOOK",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Hook for managing menu data in the admin panel, using React Query.",
+    "public_functions" : [ {
+      "name" : "useAdminMenu",
+      "parameters" : [ ],
+      "return_type" : "{ menuItems, isLoading, error, createItem, updateItem, deleteItem }",
+      "description" : "Provides state and mutation functions for admin menu management."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "frontend/src/services/adminMenuService.ts" ],
+    "depends_on" : [ "frontend/src/services/adminMenuService.ts" ],
+    "coding_instruction" : "1. Add the following imports:\n   - `import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';`\n   - `import * as adminMenuService from '@/services/adminMenuService';`\n2. Create and export a function `useAdminMenu`.\n3. Inside the hook:\n   - Get `queryClient` from `useQueryClient()`.\n   - Define the query for fetching all menu items:\n     `const { data: menuItems, isLoading, error } = useQuery({ queryKey: ['adminMenuItems'], queryFn: adminMenuService.getAllMenuItems });`\n   - Define the mutation for creating an item:\n     `const createItem = useMutation({ mutationFn: adminMenuService.createMenuItem, onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['adminMenuItems'] }); } });`\n   - Define the mutation for updating an item. The mutation function will take an object `{ id: string; data: adminMenuService.CreateMenuItemRequest }`:\n     `const updateItem = useMutation({ mutationFn: ({ id, data }) => adminMenuService.updateMenuItem(id, data), onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['adminMenuItems'] }); } });`\n   - Define the mutation for deleting an item:\n     `const deleteItem = useMutation({ mutationFn: adminMenuService.deleteMenuItem, onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['adminMenuItems'] }); } });`\n   - Return an object containing `{ menuItems: menuItems || [], isLoading, error, createItem, updateItem, deleteItem }`.\n4. Do NOT add any other code.",
+    "change_required" : true
+  }, {
+    "file_name" : "adminReservationService.ts",
+    "file_path" : "frontend/src/services/adminReservationService.ts",
+    "file_type" : "FRONTEND",
+    "layer" : "SERVICE",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Service for admin operations on reservations.",
+    "public_functions" : [ {
+      "name" : "getAllReservations",
+      "parameters" : [ ],
+      "return_type" : "Promise<ReservationDto[]>",
+      "description" : "Fetches all reservations."
+    }, {
+      "name" : "updateReservationStatus",
+      "parameters" : [ "string id", "UpdateReservationStatusRequest" ],
+      "return_type" : "Promise<ReservationDto>",
+      "description" : "Updates the status of a reservation."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ {
+      "method" : "GET",
+      "path" : "/api/v1/admin/reservations",
+      "request_body" : null,
+      "response_body" : null,
+      "description" : "Get all reservations."
+    }, {
+      "method" : "PATCH",
+      "path" : "/api/v1/admin/reservations/{id}/status",
+      "request_body" : null,
+      "response_body" : null,
+      "description" : "Update reservation status."
+    } ],
+    "imports_from" : [ "frontend/src/api/client.ts" ],
+    "depends_on" : [ "frontend/src/api/client.ts" ],
+    "coding_instruction" : "1. Add the following imports:\n   - `import { apiClient } from '@/api/client';`\n2. Define and export an interface `ReservationDto` with fields: `id`, `customerName`, `customerPhone`, `customerEmail`, `reservationTime`, `status`, `specialRequests` (all strings), and `partySize` (number).\n3. Define and export an interface `UpdateReservationStatusRequest` with one field: `status: string;`\n4. Create and export `getAllReservations`: `async (): Promise<ReservationDto[]> => { const response = await apiClient.get('/admin/reservations'); return response.data; }`\n5. Create and export `updateReservationStatus`: `async (id: string, data: UpdateReservationStatusRequest): Promise<ReservationDto> => { const response = await apiClient.patch(`/admin/reservations/${id}/status`, data); return response.data; }`\n6. Do NOT add any other code.",
+    "change_required" : true
+  }, {
+    "file_name" : "AdminReservationsPage.tsx",
+    "file_path" : "frontend/src/pages/AdminReservationsPage.tsx",
+    "file_type" : "FRONTEND",
+    "layer" : "PAGE",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Admin page for viewing and managing customer reservations.",
+    "public_functions" : [ {
+      "name" : "AdminReservationsPage",
+      "parameters" : [ ],
+      "return_type" : "JSX.Element",
+      "description" : "Renders a data table for reservation management."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "frontend/src/hooks/useAdminReservations.ts" ],
+    "depends_on" : [ "frontend/src/hooks/useAdminReservations.ts" ],
+    "coding_instruction" : "1. Add imports for React, `useAdminReservations` hook, `date-fns` for formatting, and shadcn components like `Table`, `Button`, `Select`.\n2. Create and export a default component `AdminReservationsPage`.\n3. Inside the component, call `useAdminReservations()` to get `reservations`, `isLoading`, and `updateStatus`.\n4. Implement the main return block:\n   - If `isLoading`, show a loading spinner.\n   - Render a page header with a title 'Reservation Management'.\n   - Render a data table using shadcn `Table` components to display the `reservations`.\n   - Table columns should be: Customer Name, Phone, Email, Reservation Time (formatted nicely with `date-fns`), Party Size, Status, and Special Requests.\n   - The 'Status' column should not be plain text. It should be a `Select` component (or a similar dropdown) that allows the admin to change the status.\n5. Implement Status Update functionality:\n   - The `Select` component in the 'Status' column should have options for 'PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED'.\n   - Its `onValueChange` handler should take the new status value and call `updateStatus.mutate({ id: reservation.id, data: { status: newStatus } })`.\n   - You can show a visual indicator (like a spinner) on the specific row being updated by checking `updateStatus.isPending` and `updateStatus.variables`.\n6. Do NOT add any other components, functions, or exports.",
+    "change_required" : true
+  }, {
+    "file_name" : "useAdminReservations.ts",
+    "file_path" : "frontend/src/hooks/useAdminReservations.ts",
+    "file_type" : "FRONTEND",
+    "layer" : "HOOK",
+    "created_date" : "2024-05-22",
+    "updated_date" : "2026-06-04",
+    "status" : "GENERATED",
+    "description" : "Hook for managing reservation data in the admin panel.",
+    "public_functions" : [ {
+      "name" : "useAdminReservations",
+      "parameters" : [ ],
+      "return_type" : "{ reservations, isLoading, error, updateStatus }",
+      "description" : "Provides state and mutation functions for admin reservation management."
+    } ],
+    "public_variables" : [ ],
+    "api_endpoints" : [ ],
+    "api_endpoints_consumed" : [ ],
+    "imports_from" : [ "frontend/src/services/adminReservationService.ts" ],
+    "depends_on" : [ "frontend/src/services/adminReservationService.ts" ],
+    "coding_instruction" : "1. Add the following imports:\n   - `import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';`\n   - `import * as adminReservationService from '@/services/adminReservationService';`\n2. Create and export a function `useAdminReservations`.\n3. Inside the hook:\n   - Get `queryClient` from `useQueryClient()`.\n   - Define the query for fetching all reservations:\n     `const { data: reservations, isLoading, error } = useQuery({ queryKey: ['adminReservations'], queryFn: adminReservationService.getAllReservations });`\n   - Define the mutation for updating status. The mutation function will take an object `{ id: string; data: adminReservationService.UpdateReservationStatusRequest }`:\n     `const updateStatus = useMutation({ mutationFn: ({ id, data }) => adminReservationService.updateReservationStatus(id, data), onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['adminReservations'] }); } });`\n   - Return an object containing `{ reservations: reservations || [], isLoading, error, updateStatus }`.\n4. Do NOT add any other code.",
+    "change_required" : true
+  } ]
+}
