@@ -60,11 +60,7 @@ public class JwtUtil {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(getSignInKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        return Jwts.parser().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
     }
 
     private Key getSignInKey() {
