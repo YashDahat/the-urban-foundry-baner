@@ -77,8 +77,8 @@ public class MenuService {
         existingMenuItem.setPrice(new BigDecimal(request.getPrice()));
         existingMenuItem.setCategory(MenuItemCategory.valueOf(request.getCategory().toUpperCase()));
         existingMenuItem.setImageUrl(request.getImageUrl());
-        existingMenuItem.setIsVegetarian(request.getIsVegetarian());
-        existingMenuItem.setIsAvailable(request.getIsAvailable());
+        existingMenuItem.setVegetarian(request.getIsVegetarian());
+        existingMenuItem.setAvailable(request.getIsAvailable());
 
         MenuItem updatedMenuItem = menuItemRepository.save(existingMenuItem);
         return mapToDto(updatedMenuItem);
@@ -100,8 +100,8 @@ public class MenuService {
                 .price(menuItem.getPrice().toPlainString())
                 .category(menuItem.getCategory().name())
                 .imageUrl(menuItem.getImageUrl())
-                .isVegetarian(menuItem.getIsVegetarian())
-                .isAvailable(menuItem.getIsAvailable())
+                .isVegetarian(menuItem.isVegetarian())
+                .isAvailable(menuItem.isAvailable())
                 .build();
     }
 }
