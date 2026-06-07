@@ -1,17 +1,3 @@
-Looking at the errors, I need to identify the root causes:
-
-1. `React` is imported but unused (TS6133) - remove it
-2. `Label` is imported but unused (TS6133) - remove it
-3. UI components from `@/components/ui/*` can't be found - these shadcn components don't exist as modules, need to use Radix UI directly or inline implementations. But looking at the pattern, the real issue is these modules don't exist. I need to rewrite without them, using the actual available packages (Radix UI primitives are in dependencies).
-4. `CreateMenuItemRequest` has `imageUrl`, `isVegetarian`, `isAvailable` fields (not `available`/`vegetarian`)
-5. `MenuItemDto` uses `isAvailable`/`isVegetarian` not `available`/`vegetarian`
-6. `price` type issues with `z.preprocess` causing resolver type mismatch
-7. `field` implicitly has `any` type - because `@/components/ui/form` doesn't exist, Form/FormField aren't available
-
-The shadcn UI components don't exist as installed modules. I need to rewrite the page using the actual Radix UI primitives that ARE in package.json, plus standard HTML/React patterns, removing the missing module dependencies entirely.
-
-Let me check `adminMenuService` for `CreateMenuItemRequest` and `MenuItemDto` shapes based on the error messages.
-
 import { useState, useEffect } from 'react';
 import { useAdminMenu } from '@/hooks/useAdminMenu';
 import type { CreateMenuItemRequest } from '@/services/adminMenuService';
