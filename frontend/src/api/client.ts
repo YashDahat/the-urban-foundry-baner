@@ -1,4 +1,5 @@
-import axios, { AxiosInstance } from 'axios';
+import axios from 'axios';
+import type { AxiosInstance } from 'axios';
 
 export const apiClient: AxiosInstance = axios.create({ baseURL: import.meta.env.VITE_API_BASE_URL || '/api/v1' });
 
