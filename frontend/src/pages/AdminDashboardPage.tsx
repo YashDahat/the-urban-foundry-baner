@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 
 const AdminDashboardPage = () => {
@@ -12,15 +11,11 @@ const AdminDashboardPage = () => {
         {user && <p>Welcome, {user.email}!</p>}
       </header>
       <div>
-        <Button onClick={logout}>Logout</Button>
+        <button onClick={logout}>Logout</button>
       </div>
       <nav>
-        <Button asChild>
-          <Link to="/admin/menu">Manage Menu</Link>
-        </Button>
-        <Button asChild>
-          <Link to="/admin/reservations">Manage Reservations</Link>
-        </Button>
+        <Link to="/admin/menu">Manage Menu</Link>
+        <Link to="/admin/reservations">Manage Reservations</Link>
       </nav>
     </div>
   );

@@ -1,4 +1,3 @@
-import React from 'react';
 import { useAdminReservations } from '@/hooks/useAdminReservations';
 import { format } from 'date-fns';
 import {
@@ -9,7 +8,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -49,8 +47,8 @@ export default function AdminReservationsPage() {
             return (
               <TableRow key={reservation.id}>
                 <TableCell>{reservation.customerName}</TableCell>
-                <TableCell>{reservation.phone}</TableCell>
-                <TableCell>{reservation.email}</TableCell>
+                <TableCell>{reservation.customerPhone}</TableCell>
+                <TableCell>{reservation.customerEmail}</TableCell>
                 <TableCell>
                   {format(new Date(reservation.reservationTime), 'MMM dd, yyyy hh:mm a')}
                 </TableCell>
@@ -59,7 +57,7 @@ export default function AdminReservationsPage() {
                   <div className="flex items-center gap-2">
                     <Select
                       value={reservation.status}
-                      onValueChange={(newStatus) =>
+                      onValueChange={(newStatus: string) =>
                         updateStatus.mutate({ id: reservation.id, data: { status: newStatus } })
                       }
                       disabled={isUpdatingThisRow}

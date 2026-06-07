@@ -1,54 +1,47 @@
-import React, { useState, useEffect } from 'react';
+Looking at the errors, I need to identify the root causes:
+
+1. `React` is imported but unused (TS6133) - remove it
+2. `Label` is imported but unused (TS6133) - remove it
+3. UI components from `@/components/ui/*` can't be found - these shadcn components don't exist as modules, need to use Radix UI directly or inline implementations. But looking at the pattern, the real issue is these modules don't exist. I need to rewrite without them, using the actual available packages (Radix UI primitives are in dependencies).
+4. `CreateMenuItemRequest` has `imageUrl`, `isVegetarian`, `isAvailable` fields (not `available`/`vegetarian`)
+5. `MenuItemDto` uses `isAvailable`/`isVegetarian` not `available`/`vegetarian`
+6. `price` type issues with `z.preprocess` causing resolver type mismatch
+7. `field` implicitly has `any` type - because `@/components/ui/form` doesn't exist, Form/FormField aren't available
+
+The shadcn UI components don't exist as installed modules. I need to rewrite the page using the actual Radix UI primitives that ARE in package.json, plus standard HTML/React patterns, removing the missing module dependencies entirely.
+
+Let me check `adminMenuService` for `CreateMenuItemRequest` and `MenuItemDto` shapes based on the error messages.
+
+import { useState, useEffect } from 'react';
 import { useAdminMenu } from '@/hooks/useAdminMenu';
-
-// shadcn/ui components
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogAction, AlertDialogCancel } from '@/components/ui/alert-dialog';
-import { Label } from '@/components/ui/label';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-
-// react-hook-form and zod
+import type { CreateMenuItemRequest } from '@/services/adminMenuService';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 
-// Infer MenuItem structure from useAdminMenu and form fields
 interface MenuItem {
-  id: string; // Assuming UUID or similar string ID
+  id: string;
   name: string;
   description?: string;
   price: number;
   category: string;
-  available: boolean;
-  vegetarian: boolean;
+  isAvailable: boolean;
+  isVegetarian: boolean;
+  imageUrl?: string;
 }
 
-// Zod schema for form validation
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Name is required.' }),
   description: z.string().optional(),
-  price: z.preprocess(
-    (val) => {
-      if (typeof val === 'string') {
-        return parseFloat(val);
-      }
-      return val;
-    },
-    z.number().min(0.01, { message: 'Price must be greater than 0.' })
-  ),
+  price: z.number().min(0.01, { message: 'Price must be greater than 0.' }),
   category: z.string().min(1, { message: 'Category is required.' }),
-  available: z.boolean().default(true),
-  vegetarian: z.boolean().default(false),
+  isAvailable: z.boolean().default(true),
+  isVegetarian: z.boolean().default(false),
+  imageUrl: z.string().optional(),
 });
 
 type MenuItemFormValues = z.infer<typeof formSchema>;
 
-// Define category options
 const CATEGORY_OPTIONS = ['Appetizer', 'Main Course', 'Dessert', 'Drink', 'Side'];
 
 export default function AdminMenuPage() {
@@ -56,7 +49,6 @@ export default function AdminMenuPage() {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
-
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [itemToDeleteId, setItemToDeleteId] = useState<string | null>(null);
 
@@ -67,12 +59,12 @@ export default function AdminMenuPage() {
       description: '',
       price: 0.01,
       category: '',
-      available: true,
-      vegetarian: false,
+      isAvailable: true,
+      isVegetarian: false,
+      imageUrl: '',
     },
   });
 
-  // Effect to reset form when dialog opens/closes or editingItem changes
   useEffect(() => {
     if (isDialogOpen) {
       if (editingItem) {
@@ -81,8 +73,9 @@ export default function AdminMenuPage() {
           description: editingItem.description || '',
           price: editingItem.price,
           category: editingItem.category,
-          available: editingItem.available,
-          vegetarian: editingItem.vegetarian,
+          isAvailable: editingItem.isAvailable,
+          isVegetarian: editingItem.isVegetarian,
+          imageUrl: editingItem.imageUrl || '',
         });
       } else {
         form.reset({
@@ -90,8 +83,9 @@ export default function AdminMenuPage() {
           description: '',
           price: 0.01,
           category: '',
-          available: true,
-          vegetarian: false,
+          isAvailable: true,
+          isVegetarian: false,
+          imageUrl: '',
         });
       }
     }
@@ -118,27 +112,36 @@ export default function AdminMenuPage() {
         onSuccess: () => {
           setIsDeleteDialogOpen(false);
           setItemToDeleteId(null);
-        }
+        },
       });
     }
   };
 
   const onSubmit = (values: MenuItemFormValues) => {
+    const requestData: CreateMenuItemRequest = {
+      name: values.name,
+      description: values.description,
+      price: values.price,
+      category: values.category,
+      isAvailable: values.isAvailable,
+      isVegetarian: values.isVegetarian,
+      imageUrl: values.imageUrl,
+    };
     if (editingItem) {
       updateItem.mutate(
-        { id: editingItem.id, data: values },
+        { id: editingItem.id, data: requestData },
         {
           onSuccess: () => {
             setIsDialogOpen(false);
             setEditingItem(null);
-          }
+          },
         }
       );
     } else {
-      createItem.mutate(values, {
+      createItem.mutate(requestData, {
         onSuccess: () => {
           setIsDialogOpen(false);
-        }
+        },
       });
     }
   };
@@ -154,192 +157,210 @@ export default function AdminMenuPage() {
     <div className="p-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Menu Management</h1>
-        <Button onClick={handleCreateNewItem}>Create New Item</Button>
+        <button
+          onClick={handleCreateNewItem}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Create New Item
+        </button>
       </div>
 
-      <div className="border rounded-md">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead className="text-right">Price</TableHead>
-              <TableHead className="text-center">Available</TableHead>
-              <TableHead className="text-center">Vegetarian</TableHead>
-              <TableHead className="text-center">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+      <div className="border rounded-md overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 border-b">
+            <tr>
+              <th className="text-left p-3 font-medium">Name</th>
+              <th className="text-left p-3 font-medium">Category</th>
+              <th className="text-right p-3 font-medium">Price</th>
+              <th className="text-center p-3 font-medium">Available</th>
+              <th className="text-center p-3 font-medium">Vegetarian</th>
+              <th className="text-center p-3 font-medium">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
             {menuItems.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center">
+              <tr>
+                <td colSpan={6} className="h-24 text-center p-3">
                   No menu items found.
-                </TableCell>
-              </TableRow>
+                </td>
+              </tr>
             ) : (
               menuItems.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-medium">{item.name}</TableCell>
-                  <TableCell>{item.category}</TableCell>
-                  <TableCell className="text-right">${item.price.toFixed(2)}</TableCell>
-                  <TableCell className="text-center">{item.available ? 'Yes' : 'No'}</TableCell>
-                  <TableCell className="text-center">{item.vegetarian ? 'Yes' : 'No'}</TableCell>
-                  <TableCell className="text-center">
-                    <Button variant="ghost" size="sm" onClick={() => handleEditItem(item)} className="mr-2">
+                <tr key={item.id} className="border-b last:border-b-0">
+                  <td className="p-3 font-medium">{item.name}</td>
+                  <td className="p-3">{item.category}</td>
+                  <td className="p-3 text-right">${Number(item.price).toFixed(2)}</td>
+                  <td className="p-3 text-center">{item.isAvailable ? 'Yes' : 'No'}</td>
+                  <td className="p-3 text-center">{item.isVegetarian ? 'Yes' : 'No'}</td>
+                  <td className="p-3 text-center">
+                    <button
+                      onClick={() => handleEditItem(item as unknown as MenuItem)}
+                      className="mr-2 px-3 py-1 text-sm border rounded hover:bg-gray-100"
+                    >
                       Edit
-                    </Button>
-                    <Button variant="destructive" size="sm" onClick={() => handleDeleteItem(item.id)}>
+                    </button>
+                    <button
+                      onClick={() => handleDeleteItem(item.id)}
+                      className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
+                    >
                       Delete
-                    </Button>
-                  </TableCell>
-                </TableRow>
+                    </button>
+                  </td>
+                </tr>
               ))
             )}
-          </TableBody>
-        </Table>
+          </tbody>
+        </table>
       </div>
 
       {/* Create/Edit Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>{editingItem ? 'Edit Menu Item' : 'Create New Menu Item'}</DialogTitle>
-            <DialogDescription>
-              {editingItem ? 'Make changes to the menu item here.' : 'Add a new menu item to your menu.'}
-            </DialogDescription>
-          </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Item Name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+      {isDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+            <div className="mb-4">
+              <h2 className="text-lg font-semibold">
+                {editingItem ? 'Edit Menu Item' : 'Create New Menu Item'}
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">
+                {editingItem
+                  ? 'Make changes to the menu item here.'
+                  : 'Add a new menu item to your menu.'}
+              </p>
+            </div>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Name</label>
+                <input
+                  className="w-full border rounded px-3 py-2 text-sm"
+                  placeholder="Item Name"
+                  {...form.register('name')}
+                />
+                {form.formState.errors.name && (
+                  <p className="text-red-500 text-xs mt-1">{form.formState.errors.name.message}</p>
                 )}
-              />
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <Input placeholder="A brief description" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Description</label>
+                <input
+                  className="w-full border rounded px-3 py-2 text-sm"
+                  placeholder="A brief description"
+                  {...form.register('description')}
+                />
+                {form.formState.errors.description && (
+                  <p className="text-red-500 text-xs mt-1">{form.formState.errors.description.message}</p>
                 )}
-              />
-              <FormField
-                control={form.control}
-                name="price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Price</FormLabel>
-                    <FormControl>
-                      <Input type="number" step="0.01" {...field} onChange={e => field.onChange(e.target.value)} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Price</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  className="w-full border rounded px-3 py-2 text-sm"
+                  {...form.register('price', { valueAsNumber: true })}
+                />
+                {form.formState.errors.price && (
+                  <p className="text-red-500 text-xs mt-1">{form.formState.errors.price.message}</p>
                 )}
-              />
-              <FormField
-                control={form.control}
-                name="category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a category" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {CATEGORY_OPTIONS.map((category) => (
-                          <SelectItem key={category} value={category}>
-                            {category}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Category</label>
+                <select
+                  className="w-full border rounded px-3 py-2 text-sm"
+                  {...form.register('category')}
+                >
+                  <option value="">Select a category</option>
+                  {CATEGORY_OPTIONS.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+                {form.formState.errors.category && (
+                  <p className="text-red-500 text-xs mt-1">{form.formState.errors.category.message}</p>
                 )}
-              />
-              <FormField
-                control={form.control}
-                name="available"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel>Available</FormLabel>
-                      <FormDescription>
-                        Is this item currently available on the menu?
-                      </FormDescription>
-                    </div>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="vegetarian"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel>Vegetarian</FormLabel>
-                      <FormDescription>
-                        Is this item suitable for vegetarians?
-                      </FormDescription>
-                    </div>
-                  </FormItem>
-                )}
-              />
-              <DialogFooter>
-                <Button type="submit" disabled={isMutationPending}>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Image URL</label>
+                <input
+                  className="w-full border rounded px-3 py-2 text-sm"
+                  placeholder="https://example.com/image.jpg"
+                  {...form.register('imageUrl')}
+                />
+              </div>
+              <div className="flex flex-row items-start space-x-3 rounded-md border p-4">
+                <input
+                  type="checkbox"
+                  id="isAvailable"
+                  className="mt-1"
+                  {...form.register('isAvailable')}
+                />
+                <div className="space-y-1 leading-none">
+                  <label htmlFor="isAvailable" className="text-sm font-medium">Available</label>
+                  <p className="text-xs text-gray-500">Is this item currently available on the menu?</p>
+                </div>
+              </div>
+              <div className="flex flex-row items-start space-x-3 rounded-md border p-4">
+                <input
+                  type="checkbox"
+                  id="isVegetarian"
+                  className="mt-1"
+                  {...form.register('isVegetarian')}
+                />
+                <div className="space-y-1 leading-none">
+                  <label htmlFor="isVegetarian" className="text-sm font-medium">Vegetarian</label>
+                  <p className="text-xs text-gray-500">Is this item suitable for vegetarians?</p>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 mt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsDialogOpen(false)}
+                  className="px-4 py-2 text-sm border rounded hover:bg-gray-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isMutationPending}
+                  className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+                >
                   {isMutationPending ? 'Saving...' : editingItem ? 'Save Changes' : 'Create Item'}
-                </Button>
-              </DialogFooter>
+                </button>
+              </div>
             </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
+          </div>
+        </div>
+      )}
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the menu item.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeletePending}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDeleteItem} disabled={isDeletePending}>
-              {isDeletePending ? 'Deleting...' : 'Delete'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {isDeleteDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-sm p-6">
+            <div className="mb-4">
+              <h2 className="text-lg font-semibold">Are you absolutely sure?</h2>
+              <p className="text-sm text-gray-500 mt-1">
+                This action cannot be undone. This will permanently delete the menu item.
+              </p>
+            </div>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setIsDeleteDialogOpen(false)}
+                disabled={isDeletePending}
+                className="px-4 py-2 text-sm border rounded hover:bg-gray-100 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDeleteItem}
+                disabled={isDeletePending}
+                className="px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
+              >
+                {isDeletePending ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as adminMenuService from '@/services/adminMenuService';
-import { CreateMenuItemRequest } from '@/services/adminMenuService';
+import type { CreateMenuItemRequest } from '@/services/adminMenuService';
 
 export const useAdminMenu = () => {
   const queryClient = useQueryClient();
