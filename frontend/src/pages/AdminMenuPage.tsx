@@ -21,8 +21,8 @@ const formSchema = z.object({
   description: z.string().optional(),
   price: z.number().min(0.01, { message: 'Price must be greater than 0.' }),
   category: z.string().min(1, { message: 'Category is required.' }),
-  isAvailable: z.boolean().default(true),
-  isVegetarian: z.boolean().default(false),
+  isAvailable: z.boolean(),
+  isVegetarian: z.boolean(),
   imageUrl: z.string().optional(),
 });
 
