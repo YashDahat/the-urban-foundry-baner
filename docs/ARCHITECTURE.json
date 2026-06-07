@@ -1096,7 +1096,7 @@
     "layer" : "CONTEXT",
     "created_date" : "2024-05-22",
     "updated_date" : "2026-06-07",
-    "status" : "GENERATION_FAILED",
+    "status" : "GENERATED",
     "description" : "React context to manage and provide authentication state throughout the application.",
     "public_functions" : [ {
       "name" : "AuthProvider",

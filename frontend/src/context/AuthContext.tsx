@@ -1,5 +1,4 @@
-import React from 'react';
-import { createContext, useState, type ReactNode } from 'react';
+import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as authService from '@/services/authService';
 
@@ -28,16 +27,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
 
   const login = async (credentials: authService.AuthRequest) => {
-    const response = await authService.login(credentials);
-    const newUser: User = {
-      role: response.role,
-      email: credentials.email,
-    };
-    setToken(response.token);
-    setUser(newUser);
-    localStorage.setItem('authToken', response.token);
-    localStorage.setItem('authUser', JSON.stringify(newUser));
-    navigate('/admin');
+    try {
+      const response = await authService.login(credentials);
+      const newUser: User = {
+        role: response.role,
+        email: credentials.email,
+      };
+      setToken(response.token);
+      setUser(newUser);
+      localStorage.setItem('authToken', response.token);
+      localStorage.setItem('authUser', JSON.stringify(newUser));
+      navigate('/admin');
+    } catch (error) {
+      // In a real app, you might want to handle login errors (e.g., display a message)
+      console.error('Login failed:', error);
+    }
   };
 
   const logout = () => {
