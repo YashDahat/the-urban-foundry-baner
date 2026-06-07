@@ -1,7 +1,3 @@
-The error message indicates TypeScript isn't installed/accessible when the build runs, but looking at the actual code, the real compilation issue is that `useEffect` is imported but never used. However, the build error shown is a tooling issue, not a type error.
-
-Looking more carefully at the code itself: `useEffect` is imported but not used — this would cause a TypeScript/ESLint error that could fail the build. That's the fix needed within this file.
-
 import React, { createContext, useState, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as authService from '@/services/authService';
